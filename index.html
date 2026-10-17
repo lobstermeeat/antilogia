@@ -384,6 +384,156 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
 @media (max-width:560px){.agora{height:540px}.agora-cap{flex-direction:column;align-items:stretch;gap:8px;padding:10px 12px}.agora-cap .hk{font-size:15.5px}.agora-arrow{top:34%;width:40px;height:40px}}
 
 @media (max-width:560px){.top{flex-wrap:wrap;row-gap:10px}.brand{font-size:22px}.brand .mark{width:30px;height:30px;font-size:16px}.head-right{gap:10px;margin-left:auto}.back{white-space:nowrap;font-size:13.5px}.tone button{padding:7px 11px}}
+
+/* ===== Game feel: hits, the fall, attack and shield moves ===== */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sound{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.7);color:var(--thk);display:grid;place-items:center;cursor:pointer;padding:0;backdrop-filter:blur(6px)}
+.sound svg{width:20px;height:20px}
+.sound .off{display:none}
+.sound[aria-pressed="false"]{color:var(--mute)}
+.sound[aria-pressed="false"] .on{display:none}
+.sound[aria-pressed="false"] .off{display:inline}
+.fx-layer{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.fx-canvas{position:absolute;inset:0;width:100%;height:100%}
+.shard{position:absolute;will-change:transform,opacity;list-style:none}
+.shard > *{pointer-events:none;box-sizing:border-box}
+.fx-pop{position:absolute;transform:translate(-50%,-50%);font:700 22px/1 var(--f-caps);letter-spacing:.04em;white-space:nowrap;color:var(--ink);text-shadow:0 2px 0 #fff,0 0 14px rgba(255,255,255,.95);animation:popUp 1.7s cubic-bezier(.2,1.2,.4,1) forwards}
+.fx-pop.v-conceded{color:var(--ref);font-size:30px}
+.fx-pop.v-weakened{color:var(--amber);font-size:24px}
+.fx-pop.v-held{color:var(--thk)}
+.fx-pop.streak{color:var(--gold);font-size:20px;text-shadow:0 2px 0 #3b2f22,0 0 14px rgba(255,255,255,.95)}
+@keyframes popUp{0%{opacity:0;transform:translate(-50%,-30%) scale(.4) rotate(-6deg)}14%{opacity:1;transform:translate(-50%,-95%) scale(1.18) rotate(-3deg)}28%{transform:translate(-50%,-105%) scale(1) rotate(-3deg)}78%{opacity:1}100%{opacity:0;transform:translate(-50%,-200%) scale(1) rotate(-3deg)}}
+.fx-spear{position:absolute;left:0;top:0;width:58px;height:14px;margin:-7px 0 0 -29px;will-change:transform}
+.fx-spear svg{display:block;width:100%;height:100%}
+.claim.fx-crumble,.joint.fx-crumble{animation:crumble .7s ease both;background:linear-gradient(90deg,var(--ref-soft),transparent 80%)}
+@keyframes crumble{0%{transform:none}14%{transform:translateX(-7px) rotate(-1deg)}28%{transform:translateX(7px) rotate(1deg)}44%{transform:translateX(-4px)}60%{transform:translateY(3px) rotate(.6deg)}100%{transform:none}}
+.claim.fx-wobble,.joint.fx-wobble{animation:wobble .9s ease both;transform-origin:50% 100%}
+@keyframes wobble{0%,100%{transform:none}20%{transform:rotate(-1.6deg)}40%{transform:rotate(1.3deg)}60%{transform:rotate(-.8deg)}80%{transform:rotate(.4deg)}}
+.claim.fx-shield,.joint.fx-shield{animation:shield 1s ease both}
+@keyframes shield{0%{box-shadow:inset 0 0 0 0 rgba(30,90,156,0)}25%{box-shadow:inset 0 0 0 3px rgba(30,90,156,.6),0 0 24px rgba(201,150,43,.6);background:var(--thk-soft)}100%{box-shadow:inset 0 0 0 0 rgba(30,90,156,0)}}
+.fx-impact{animation:impact .45s ease}
+@keyframes impact{30%{transform:translateX(6px)}60%{transform:translateX(-3px)}}
+.claim.fx-build{animation:build 1.1s ease both}
+@keyframes build{0%{background:var(--amber-soft);box-shadow:inset 0 0 0 2px var(--amber)}100%{background:transparent;box-shadow:none}}
+.claim.fx-brace,.joint.fx-brace{animation:brace .6s ease}
+@keyframes brace{40%{box-shadow:inset 4px 0 0 var(--thk);background:var(--thk-soft)}}
+.arena.quake-s{animation:quakeS .45s linear}
+.arena.quake-l{animation:quakeL 1.1s linear}
+@keyframes quakeS{20%{transform:translate(-3px,1px)}40%{transform:translate(3px,-1px)}60%{transform:translate(-2px,1px)}80%{transform:translate(2px,0)}}
+@keyframes quakeL{10%{transform:translate(-8px,3px) rotate(-.3deg)}20%{transform:translate(7px,-4px) rotate(.3deg)}30%{transform:translate(-6px,2px)}40%{transform:translate(6px,3px) rotate(.2deg)}55%{transform:translate(-4px,-2px)}70%{transform:translate(3px,1px)}85%{transform:translate(-1px,0)}}
+.claims.cracking > li{position:relative}
+.claims.cracking > li::after{content:"";position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40' preserveAspectRatio='none'%3E%3Cpath d='M0 21L9 18L16 25L27 14L35 23L46 11L55 24L63 17L72 27L81 15L90 22L100 19M27 14L30 4M55 24L52 36M81 15L86 6M16 25L13 34' fill='none' stroke='%233b2f22' stroke-width='1.4' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center/100% 100% no-repeat;animation:crackIn .45s steps(5) both}
+.claims.cracking > li:nth-child(even)::after{transform:scaleX(-1)}
+@keyframes crackIn{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:.85;clip-path:inset(0 0 0 0)}}
+
+/* Health bar */
+.hp{position:relative;height:9px;border-radius:999px;background:#EDE3CF;box-shadow:inset 0 1px 2px rgba(60,40,10,.25);overflow:hidden;margin:7px 0 9px}
+.hp i{position:absolute;left:0;top:0;bottom:0;border-radius:999px}
+.hp .ghost{background:#F0B39F;transition:width 1s ease .5s}
+.hp .fill{background:linear-gradient(90deg,#2E74C0,var(--thk));transition:width .5s cubic-bezier(.3,1.3,.5,1)}
+.hp.mid .fill{background:linear-gradient(90deg,#DDAE45,var(--amber))}
+.hp.low .fill{background:linear-gradient(90deg,#DD6B4F,var(--ref))}
+.bridge-head .dmg{display:inline-block;margin-right:6px;font:700 13px/1 var(--f-caps);color:var(--ref);animation:dmg 1.8s ease forwards}
+.bridge-head .dmg.up{color:var(--thk)}
+@keyframes dmg{0%{opacity:0;transform:translateY(6px) scale(.6)}14%{opacity:1;transform:translateY(-3px) scale(1.3)}70%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-10px)}}
+
+/* Repairs, scouting, aiming */
+.claim .rev{display:inline-block;margin-left:6px;font:700 9.5px/1 var(--f-caps);letter-spacing:.08em;text-transform:uppercase;color:var(--amber);border:1px solid var(--amber);border-radius:999px;padding:3px 6px;vertical-align:2px}
+.claim .orig{display:block;margin-top:3px;font:400 12.5px/1.4 var(--f-ui);color:var(--mute);text-decoration:line-through}
+.claim.link-added{grid-template-columns:30px minmax(0,1fr)}
+.claim.link-added .no{color:var(--amber);font-weight:700}
+.rb{display:flex;width:fit-content;align-items:center;gap:6px;margin-top:8px;font:700 12.5px/1 var(--f-ui);color:#7A5410;background:var(--amber-soft);border:1px solid var(--amber);border-radius:999px;padding:6px 11px;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.rb svg{width:14px;height:14px}
+.rb:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 10px -5px rgba(176,125,24,.8)}
+.rb:disabled{opacity:.45;cursor:not-allowed}
+.joint .rb{display:inline-flex;margin:0 0 0 8px;padding:5px 9px;vertical-align:middle}
+.scout{display:flex;gap:7px;align-items:baseline;margin-top:6px;font:400 13px/1.35 var(--f-ui);color:var(--mute)}
+.joint .scout{margin-top:6px}
+.scout b{flex:none;font:700 9.5px/1 var(--f-caps);letter-spacing:.07em;text-transform:uppercase;padding:4px 7px;border-radius:999px;border:1px solid var(--line-strong)}
+.scout.w3 b{background:var(--ref);border-color:var(--ref);color:#fff;animation:beacon 1.6s ease-in-out infinite}
+.scout.w2 b{color:var(--amber);border-color:var(--amber);background:var(--amber-soft)}
+.scout.w1 b{color:var(--thk);border-color:var(--thk)}
+@keyframes beacon{50%{box-shadow:0 0 0 5px rgba(184,67,42,.18)}}
+.panel.aiming .claim[data-k]:not(.dead),.panel.aiming .joint[data-k]:not(.dead){cursor:crosshair}
+.panel.aiming .claim[data-k]:not(.dead):not(.aim):hover{background:#FCF0EA;margin-inline:-12px;padding-inline:12px}
+.claim.aim,.joint.aim{background:#FBE1D5!important;margin-inline:-12px;padding-inline:12px;box-shadow:inset 3px 0 0 var(--ref)}
+.joint.aim{padding-left:52px}
+.claim.aim .no .dot{background:var(--ref);color:#fff;border-color:var(--ref)}
+.claim.aim .txt::before{content:"◎ ";color:var(--ref);font-weight:700}
+
+/* Composer: aim bar, move chips, charge meter */
+.aim-bar,.tools{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;overflow-x:auto;scrollbar-width:none;margin-inline:-2px;padding:2px 30px 3px 2px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+.aim-bar::-webkit-scrollbar,.tools::-webkit-scrollbar{display:none}
+.aim-bar > *,.tools > *{flex:none}
+.aim-bar .lab,.tools .lab{font:700 11px/1 var(--f-caps);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-right:4px}
+.tg{min-width:36px;height:34px;padding:0 11px;border-radius:999px;border:1.5px solid var(--line-strong);background:#FFFDF8;color:var(--ink);font:700 13px/1 var(--f-caps);cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}
+.tg:hover:not(:disabled){transform:translateY(-2px);border-color:var(--ref)}
+.tg[data-s="held"]{border-color:var(--thk)}
+.tg[data-s="weakened"]{border-color:var(--amber);border-style:dashed}
+.tg[aria-pressed="true"]{background:var(--ref);border-color:var(--ref);color:#fff;box-shadow:0 5px 12px -5px rgba(184,67,42,.8);transform:translateY(-2px)}
+.tg:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
+.tool{font:600 13px/1 var(--f-ui);padding:8px 12px;border-radius:999px;border:1px solid var(--line-strong);background:#FFFDF8;color:var(--ink);cursor:pointer;transition:transform .15s,box-shadow .15s,background .15s}
+.tool:hover:not(:disabled){transform:translateY(-2px)}
+.tool.atk:hover:not(:disabled){border-color:var(--ref)}
+.tool.def:hover:not(:disabled){border-color:var(--thk)}
+.tool.atk[aria-pressed="true"]{background:var(--ref-soft);border-color:var(--ref);color:var(--ref)}
+.tool.def[aria-pressed="true"]{background:var(--thk-soft);border-color:var(--thk);color:var(--thk)}
+.tool:disabled{opacity:.45;cursor:not-allowed}
+.meter{display:flex;gap:10px;align-items:center;font:500 12.5px/1.25 var(--f-ui);color:var(--mute);min-height:16px}
+.meter .pips{display:inline-flex;gap:3px;flex:none}
+.meter .pips i{width:18px;height:8px;border-radius:2px;background:#E6DCC8;transform:skewX(-20deg);transition:background .2s,box-shadow .2s}
+.meter .pips i.on{background:var(--thk)}
+.meter.atk .pips i.on{background:var(--ref)}
+.meter[data-s="5"] .pips i.on{background:var(--gold);box-shadow:0 0 8px rgba(201,150,43,.75)}
+.meter.bump .pips{animation:bump .3s ease}
+@keyframes bump{50%{transform:scale(1.15)}}
+.rebuild-note{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:baseline;padding:10px 14px;border:1.5px dashed var(--amber);background:var(--amber-soft);border-radius:12px;font:400 14px/1.4 var(--f-ui)}
+.rebuild-note b{font:700 13px/1.2 var(--f-caps);letter-spacing:.04em;color:#7A5410}
+.rebuild-note span{flex:1;min-width:200px;color:var(--ink)}
+.mtags{display:flex;gap:6px;margin:-2px 0 6px}
+.mtag{font:700 10px/1 var(--f-caps);letter-spacing:.07em;text-transform:uppercase;padding:4px 8px;border-radius:999px;border:1px solid var(--line-strong);color:var(--mute)}
+.mtag.atk{border-color:var(--ref);color:var(--ref)}
+.mtag.def{border-color:var(--thk);color:var(--thk)}
+.move.build .who .role{color:#7A5410}
+
+/* The Fall */
+.fall{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px 16px;overflow-y:auto;pointer-events:none;transition:background .5s}
+.fall > :first-child{margin-top:auto}.fall > :last-child{margin-bottom:auto}
+.fall.dim{background:rgba(36,28,18,.46);backdrop-filter:blur(2px)}
+.fall.ready{pointer-events:auto}
+.fall-face{position:relative;animation:faceIn .6s cubic-bezier(.2,1.5,.4,1) both}
+.fall-face .pt{box-shadow:0 0 0 4px #fff,0 0 0 8px var(--gold),0 20px 40px -14px rgba(0,0,0,.6)}
+.pt.aghast img,.pt.aghast svg{animation:aghast .45s linear infinite}
+.pt.aghast .mo{opacity:0}.pt.aghast .mo2{opacity:1}
+@keyframes aghast{0%,100%{transform:rotate(0) translateX(0)}25%{transform:rotate(-4deg) translateX(-3px)}75%{transform:rotate(4deg) translateX(3px)}}
+@keyframes faceIn{from{transform:translateY(70px) scale(.5);opacity:0}to{transform:none;opacity:1}}
+.fall-face .stars{position:absolute;left:50%;top:6px;width:0;height:0;animation:orbit 1.3s linear infinite}
+.fall-face .stars i{position:absolute;left:-11px;top:-11px;font-style:normal;color:var(--gold);font-size:24px;line-height:22px;text-shadow:0 1.5px 0 #3b2f22}
+.fall-face .stars i:nth-child(1){transform:translate(-62px,4px)}
+.fall-face .stars i:nth-child(2){transform:translate(48px,-6px) scale(.8)}
+.fall-face .stars i:nth-child(3){transform:translate(-4px,-26px) scale(.9)}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.fall-face .sweat{position:absolute;right:4px;top:22px;width:15px;height:21px;background:#A9D8F5;border:2px solid #3b2f22;border-radius:50% 50% 50% 50%/62% 62% 38% 38%;animation:sweat 1.1s ease-in infinite}
+@keyframes sweat{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(30px);opacity:0}}
+.fall-stamp{font:700 clamp(44px,9vw,96px)/1 var(--f-caps);letter-spacing:.06em;color:var(--ref);padding:12px 28px 8px;border:6px solid currentColor;border-radius:12px;background:rgba(255,253,248,.94);margin-block:16px 22px;transform:rotate(-7deg);animation:slam .55s cubic-bezier(.2,1.6,.4,1) both;box-shadow:0 18px 40px -16px rgba(0,0,0,.6);white-space:nowrap}
+.fall.sem .fall-stamp{font-size:clamp(34px,6vw,62px);color:var(--ink);border-width:4px;letter-spacing:.14em}
+@keyframes slam{0%{transform:rotate(-18deg) scale(3);opacity:0}60%{transform:rotate(-5deg) scale(.92);opacity:1}100%{transform:rotate(-7deg) scale(1)}}
+.fall-card{width:min(540px,100%);background:#FFFDF8;border:2px solid #3b2f22;border-radius:16px;box-shadow:0 6px 0 #3b2f22,0 30px 60px -20px rgba(0,0,0,.5);padding:18px 20px 16px;animation:cardIn .5s cubic-bezier(.2,1.3,.4,1) both;display:grid;gap:11px}
+.fall.sem .fall-card{border:1px solid var(--line-strong);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+@keyframes cardIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.fall-card h2{margin:0;font:700 20px/1.25 var(--f-caps);letter-spacing:.02em}
+.fall-card .why{margin:0;font:400 16.5px/1.45 var(--f-display)}
+.fall-card .why b{font-style:italic;font-weight:600}
+.fall-card .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fall-card .stats div{background:#F6EFE0;border-radius:10px;padding:9px 8px;display:grid;gap:3px;text-align:center}
+.fall-card .stats b{font:700 22px/1 var(--f-caps);color:var(--ink)}
+.fall-card .stats span{font:500 12px/1.2 var(--f-ui);color:var(--mute)}
+.fall-card .next{margin:0;font:400 14px/1.45 var(--f-ui);color:var(--mute)}
+.fall-card .btn svg{width:15px;height:15px;vertical-align:-2px}
+.rebuild-note.fx-build{animation:noteIn .9s ease}
+@keyframes noteIn{0%{transform:scale(.97);box-shadow:0 0 0 0 rgba(176,125,24,.5)}40%{transform:scale(1.01);box-shadow:0 0 0 8px rgba(176,125,24,.18)}100%{transform:none;box-shadow:0 0 0 0 rgba(176,125,24,0)}}
+@media (max-width:560px){.fall-face .pt{width:112px!important;height:112px!important}.fall-card{padding:16px}.fall-card .row .btn{flex:1}}
+@media (prefers-reduced-motion:reduce){.fx-pop,.claim[class*="fx-"],.joint[class*="fx-"],.arena.quake-s,.arena.quake-l,.fall-face,.fall-stamp,.fall-card,.pt.aghast img,.pt.aghast svg,.fall-face .stars,.fall-face .sweat,.scout.w3 b,.claims.cracking > li::after{animation:none!important}}
 </style>
 
 </head>
@@ -393,6 +543,7 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
     <button type="button" class="brand" id="brand"><span class="mark">∴</span>Antilogia<span class="gr">ἀντιλογία</span></button>
     <div class="head-right">
       <button type="button" class="back" id="backBtn" hidden>← All questions</button>
+      <button type="button" class="sound" id="soundBtn" aria-pressed="true" title="Sound effects"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path class="on" d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="off" d="M15.5 9.5l5 5M20.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="sr">Sound</span></button>
       <span class="tone" role="group" aria-label="Space">
         <button type="button" id="tonePlain" aria-pressed="true">Everyday</button>
         <button type="button" id="toneScholar" aria-pressed="false">Seminar</button>
@@ -467,9 +618,14 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
         <button type="button" class="btn ref" id="callBtn"></button>
       </div>
       <div class="composer" id="composer" hidden>
+        <div class="rebuild-note" id="rebuildNote" hidden></div>
+        <div class="aim-bar" id="aimBar" hidden></div>
+        <div class="tools" id="tools" hidden></div>
         <textarea id="reply" rows="4"></textarea>
+        <div class="meter" id="meter" title="A rough guide only. Claude does the real judging."><span class="pips"><i></i><i></i><i></i><i></i><i></i></span><span class="ml"></span></div>
         <div class="row">
           <button type="button" class="btn primary" id="sendBtn">Reply</button>
+          <button type="button" class="link" id="scoutBtn" hidden>Scout weak spots</button>
           <button type="button" class="link" id="hintBtn">What would they say?</button>
           <button type="button" class="link" id="skipBtn">Skip this one</button>
           <button type="button" class="link" id="sumBtn" hidden>Sum up</button>
@@ -1175,7 +1331,8 @@ function transcriptText(sess, arg, limit){
       case 'defense': return m.n + '… DEFENDER (on ' + m.target + '): ' + m.text;
       case 'verdict': return '   VERDICT on ' + m.target + ': ' + m.verdict + '. ' + m.text;
       case 'statement': return arg.thinker.toUpperCase() + ' (opening statement): ' + m.text;
-      case 'attack': return m.n + '. OBJECTOR: ' + m.text;
+      case 'attack': return m.n + '. OBJECTOR' + ((m.aim || m.weapon) ? ' (' + [m.aim ? 'aimed at ' + m.aim : '', m.weapon ? 'as: ' + m.weapon : ''].filter(Boolean).join(', ') + ')' : '') + ': ' + m.text;
+      case 'rebuild': return '   DEFENDER REBUILT ' + m.target + ' (this wording replaces the conceded one): ' + m.text;
       case 'reply': return m.n + '… ' + arg.thinker.toUpperCase() + ' (objection read as hitting ' + m.target + ', graded ' + m.verdict + '): ' + m.text + (m.question ? '\n   Question to the objector: ' + m.question : '');
       case 'hint': return '   [the defender consulted lines of defense from the literature]';
       case 'note': return '   [' + m.text + ']';
@@ -1186,7 +1343,9 @@ function transcriptText(sess, arg, limit){
 function ctx(arg, sess){
   const st = keysOf(arg).map(k => k + ': ' + sess.status[k]).join(', ');
   const conceded = keysOf(arg).filter(k => sess.status[k] === 'conceded');
+  const rev = sess.revised || {}, rk = Object.keys(rev).filter(k => rev[k]);
   return 'ARGUMENT UNDER DISPUTE\n' + argText(arg) +
+    (rk.length ? '\n\nTHE DEFENDER\'S REPAIRS (these replace the original wording from now on)\n' + rk.map(k => k === 'INF' ? 'Added link between the premises and the conclusion: ' + rev.INF : k === 'C' ? 'C now reads: ' + rev.C : k + ' now reads: ' + rev[k]).join('\n') : '') +
     '\n\nSTANDING OF EACH PART (P = premise, INF = the inference from premises to conclusion, C = the conclusion)\n' + st +
     (conceded.length ? '\nAlready conceded, do not attack again: ' + conceded.join(', ') : '') +
     (simple() ? '\n\nTHE PLAIN VERSION THE PLAYER SEES\n' + plainOf(arg).map((t, i, a) => (i === a.length - 1 ? 'Conclusion: ' : 'Point ' + (i + 1) + ': ') + t).join('\n') : '') +
@@ -1228,6 +1387,20 @@ function hintPrompt(arg, sess){
 function summationPrompt(arg, sess){
   return 'Sum up this dispute in Antilogia, a dialectical sparring game, for the player.\n\n' + toneLine(arg) + '\n\n' + ctx(arg, sess) + '\n\n' +
     'Write 90 to 140 words in the second person, plain prose, no headings or bullets: where the argument now stands (which parts held, were weakened, or were conceded, and why), the single most important thing the player still needs to think through, and one specific thing to read or watch next (author and title). No praise for its own sake.';
+}
+function rebuildPrompt(arg, sess, k){
+  const what = k === 'INF' ? 'supplied a missing link (a new claim meant to make the conclusion follow from the premises)' : k === 'C' ? 'scaled back the conclusion to something more modest' : 'rewritten ' + k + ', which had been conceded';
+  return 'You are the Refuter in Antilogia, a dialectical sparring game. The player is defending the argument below. Instead of answering an objection, they have just repaired the argument: they ' + what + ' (the last DEFENDER REBUILT turn in the transcript).\n\n' +
+    toneLine(arg) + '\n\n' + ctx(arg, sess) + '\n\n' +
+    'FIRST, JUDGE THE REPAIR\nA good repair does two jobs at once: it escapes the objections that brought the old version down, and the argument still reaches its conclusion with it. Watch for the classic failures: a claim made safe by being made too weak to do its job, a missing link that simply assumes the conclusion, or a conclusion scaled back so far that nobody would dispute it.\nHOLDS: both jobs done; the repaired part now stands.\nWEAKENED: it stands, but at a cost, such as a narrower conclusion or a new assumption someone could reasonably reject. Say what the cost is.\nCONCEDED: the old objection still lands, or the argument no longer gets to its conclusion.\n\n' +
+    'THEN MAKE YOUR NEXT MOVE\nAttack whatever is now weakest, which may be the repair itself. Never repeat an objection already made in the transcript. Same standards as before: concrete, charitable, second person, a named source when there is one.\n\n' +
+    'Reply in exactly this format and nothing else. Each key starts a line, in uppercase:\nVERDICT: HOLDS or WEAKENED or CONCEDED\nASSESSMENT: 40 to 80 words on what the repair did and did not do\n' + FORMAT_OBJ;
+}
+function scoutPrompt(arg, sess){
+  const open = keysOf(arg).filter(k => sess.status[k] !== 'conceded');
+  return 'In Antilogia, a dialectical sparring game, a player is attacking the argument below and wants a scouting report: where is it weakest?\n\n' + toneLine(arg) + '\n\n' + ctx(arg, sess) + '\n\n' +
+    'For each of these parts: ' + open.join(', ') + ', rate how open it is to attack: 3 = the weakest spot, 2 = has some give, 1 = sturdy. Use 3 for exactly one part unless nothing is weak. Then give a tip of 6 to 14 words naming the KIND of attack that would work there (a counterexample, a hidden assumption, an ambiguity, and so on), without writing the attack itself.\n\n' +
+    'Reply with one line per part and nothing else, in exactly this shape:\n' + open.map(k => k + ' | 1, 2 or 3 | tip').join('\n');
 }
 
 /* ---------- parsing ---------- */
@@ -1379,7 +1552,7 @@ function commitThinker(fields, kind, raw){
   return true;
 }
 async function runRefuter(prompt, opts){
-  const sess = getSession();
+  const sess = getSession(), prevLen = sess.moves.length;
   busy = true; setErr(''); updateControls(); renderDispute();
   startLive('ref', 'The Refuter is thinking');
   let committed = false;
@@ -1395,10 +1568,11 @@ async function runRefuter(prompt, opts){
     busy = false; endLive(); wantScroll = committed;
     if (!committed) sess.awaiting = opts.withVerdict ? 'verdict-retry' : 'objection';
     save(); renderPanel(); renderDispute(); updateControls();
+    afterMove(prevLen, 'defend');
   }
 }
 async function runThinker(prompt, kind){
-  const arg = currentArg(), sess = getSession();
+  const arg = currentArg(), sess = getSession(), prevLen = sess.moves.length;
   busy = true; setErr(''); updateControls(); renderDispute();
   startLive('thk', shortName(arg) + ' is thinking');
   let committed = false;
@@ -1413,6 +1587,7 @@ async function runThinker(prompt, kind){
     busy = false; endLive(); wantScroll = committed;
     if (!committed) sess.awaiting = kind === 'reply' ? 'reply-retry' : 'attack';
     save(); renderPanel(); renderDispute(); updateControls();
+    afterMove(prevLen, 'attack');
   }
 }
 async function runPlain(prompt, kind, label){
@@ -1444,16 +1619,31 @@ async function startAs(mode){
 async function submit(){
   const ta = $('#reply'); const text = ta.value.trim(); if (!text || busy) return;
   const arg = currentArg(), sess = getSession();
+  if (ui.starter && text === ui.starter.trim()) { setErr(simple() ? 'Finish the sentence first: that is only the opening.' : 'Complete the move; only the opening phrase is written.'); return; }
+  const tool = toolName();
+  ui.weapon = null; ui.starter = '';
+  if (ui.rebuild) {
+    const k = ui.rebuild; ui.rebuild = null;
+    sess.revised = Object.assign({}, sess.revised || {}); sess.revised[k] = text;
+    sess.moves.push({ kind: 'rebuild', target: k, text: text });
+    sess.focus = k; sess.awaiting = 'verdict'; ta.value = ''; save(); renderPanel(); renderDispute();
+    buildFx(k);
+    await runRefuter(rebuildPrompt(arg, sess, k), { cache: false, withVerdict: true });
+    return;
+  }
   if (sess.mode === 'defend') {
     if (sess.awaiting !== 'defense') return;
-    sess.moves.push({ kind: 'defense', n: sess.nObj, target: sess.focus, text: text });
+    sess.moves.push({ kind: 'defense', n: sess.nObj, target: sess.focus, text: text, tool: tool });
     sess.awaiting = 'verdict'; ta.value = ''; save(); renderDispute();
+    braceFx(sess.focus);
     await runRefuter(verdictPrompt(arg, sess), { cache: false, withVerdict: true });
   } else {
     if (sess.awaiting !== 'attack') return;
     sess.nAtk += 1;
-    sess.moves.push({ kind: 'attack', n: sess.nAtk, text: text });
+    const aim = ui.aim && sess.status[ui.aim] !== 'conceded' ? ui.aim : null;
+    sess.moves.push({ kind: 'attack', n: sess.nAtk, text: text, aim: aim, weapon: tool });
     sess.awaiting = 'reply'; ta.value = ''; save(); renderDispute();
+    throwFx(aim);
     await runThinker(replyPrompt(arg, sess), 'reply');
   }
 }
@@ -1484,6 +1674,7 @@ function switchSides(){
   const sess = getSession();
   if (busy) return;
   const mode = sess.mode === 'defend' ? 'attack' : 'defend';
+  resetUi(); sess.streak = 0;
   sess.mode = mode; state.mode = mode;
   sess.moves.push({ kind: 'note', text: mode === 'defend' ? 'You switched sides and are now defending.' : 'You switched sides and are now attacking.' });
   if (mode === 'attack') sess.awaiting = 'attack';
@@ -1496,7 +1687,7 @@ function switchSides(){
 }
 function setTone(t){
   if (state.tone === t || busy) return;
-  stopStage(); stage.argId = null;
+  stopStage(); stage.argId = null; closeFall(true); resetUi();
   state.tone = t; save();
   if (state.view === 'arena' && currentArg().kind === 'everyday' && t === 'scholar') state.view = 'library';
   if (state.view === 'arena') getSession();
@@ -1508,6 +1699,8 @@ function resetDispute(){
   if (busy) return;
   if (Date.now() - armedReset > 4000) { armedReset = Date.now(); renderPanel(); setTimeout(renderPanel, 4200); return; }
   armedReset = 0;
+  closeFall(true); resetUi(); delete ui.pct[sk(arg.id)];
+  if (temple3d) temple3d.rewind();
   state.sessions[sk(arg.id)] = freshSession(arg, state.mode); stage.argId = null;
   save(); renderPanel(); renderDispute(); updateControls();
 }
@@ -1528,7 +1721,7 @@ function surprise(){
 }
 function openArg(id){
   if (busy && ctl) ctl.abort();
-  stopStage(); stage.argId = null;
+  stopStage(); stage.argId = null; closeFall(true); resetUi();
   state.selected = id; state.view = 'arena'; save();
   getSession();
   renderAll();
@@ -1536,7 +1729,7 @@ function openArg(id){
 }
 function goLibrary(){
   if (busy && ctl) ctl.abort();
-  stopStage(); stage.argId = null;
+  stopStage(); stage.argId = null; closeFall(true); resetUi();
   state.view = 'library'; save();
   renderAll();
 }
@@ -1552,6 +1745,7 @@ function renderAll(){
   updateControls();
 }
 function renderTone(){
+  renderSound();
   $('.wrap').dataset.space = simple() ? 'everyday' : 'seminar';
   $('#tonePlain').setAttribute('aria-pressed', state.tone === 'plain' ? 'true' : 'false');
   $('#toneScholar').setAttribute('aria-pressed', state.tone === 'scholar' ? 'true' : 'false');
@@ -1663,7 +1857,30 @@ function renderPanel(){
     h('p', { class: 'src' }, arg.thinker + ', ', h('i', { text: arg.title }), arg.work ? ' · ' + arg.work : '', arg.year ? ', ' + arg.year : ''))));
 
   const pct = integrity(arg, sess);
-  P.append(h('div', { class: 'bridge-head' }, h('span', { text: simple() ? (HAS3D ? 'Each column holds up the conclusion' : 'Each pillar holds up the conclusion') : (HAS3D ? 'The argument as a temple' : 'The argument as a bridge') }), h('span', {}, 'standing ', h('b', { text: pct + '%' }))));
+  if (sess.broken == null) sess.broken = isBroken(arg, sess);
+  const pkey = sk(arg.id), prevPct = ui.pct[pkey];
+  ui.pct[pkey] = pct;
+  const dmg = (prevPct != null && prevPct !== pct) ? h('span', { class: 'dmg' + (pct > prevPct ? ' up' : ''), text: (pct > prevPct ? '+' : '−') + Math.abs(pct - prevPct) + '%' }) : null;
+  P.append(h('div', { class: 'bridge-head' }, h('span', { text: sess.broken ? (simple() ? 'It has fallen. Rebuild it?' : 'The argument has collapsed') : simple() ? (HAS3D ? 'Each column holds up the conclusion' : 'Each pillar holds up the conclusion') : (HAS3D ? 'The argument as a temple' : 'The argument as a bridge') }), h('span', {}, dmg, 'standing ', h('b', { text: pct + '%' }))));
+  const hp = h('div', { class: 'hp' + (pct <= 34 ? ' low' : pct <= 67 ? ' mid' : ''), role: 'img', 'aria-label': pct + '% of the argument still standing' }, h('i', { class: 'ghost' }), h('i', { class: 'fill' }));
+  const w0 = (prevPct == null ? pct : prevPct) + '%';
+  hp.firstChild.style.width = w0; hp.lastChild.style.width = w0;
+  if (prevPct != null && prevPct !== pct) requestAnimationFrame(() => requestAnimationFrame(() => { hp.firstChild.style.width = pct + '%'; hp.lastChild.style.width = pct + '%'; }));
+  P.append(hp);
+  const aimOn = aimingNow(sess);
+  P.classList.toggle('aiming', aimOn);
+  P.classList.toggle('broken', !!sess.broken);
+  const rev = sess.revised || {};
+  const cls = k => (sess.focus === k ? ' focus' : '') + (aimOn && ui.aim === k ? ' aim' : '') + (sess.status[k] === 'conceded' ? ' dead' : '');
+  const scoutEl = k => {
+    const sc = sess.mode === 'attack' && sess.scout && sess.scout[k];
+    if (!sc || sess.status[k] === 'conceded') return null;
+    const names = simple() ? { 3: 'Weak spot', 2: 'Some give', 1: 'Sturdy' } : { 3: 'Most exposed', 2: 'Contestable', 1: 'Secure' };
+    return h('span', { class: 'scout w' + sc.w }, h('b', { text: names[sc.w] }), sc.tip);
+  };
+  const rbLabel = k => simple() ? (k === 'INF' ? 'Add a missing link' : k === 'C' ? 'Scale it back' : 'Rebuild it') : (k === 'INF' ? 'Supply a premise' : k === 'C' ? 'Weaken the conclusion' : 'Revise ' + k);
+  const rbBtn = k => (sess.mode === 'defend' && sess.status[k] === 'conceded' && !ui.rebuild && aiUsable()) ? h('button', { type: 'button', class: 'rb', disabled: busy, onclick: e => { e.stopPropagation(); startRebuild(k); } }, hammerIcon(), rbLabel(k)) : null;
+  const revTag = k => rev[k] ? h('span', { class: 'rev', text: simple() ? 'rebuilt' : 'revised' }) : null;
   const tp = ensureTemple();
   if (tp) {
     P.append(tp.host);
@@ -1683,25 +1900,29 @@ function renderPanel(){
     ul.append(h('li', { class: 'sect', text: arg.kind === 'everyday' ? 'How they see it' : 'How ' + shortName(arg) + ' sees it' }));
     arg.premises.forEach((p, i) => {
       const k = 'P' + (i + 1);
-      ul.append(h('li', { class: 'claim' + (sess.focus === k ? ' focus' : ''), 'data-k': k }, h('span', { class: 'no' }, h('span', { class: 'dot', text: String(i + 1) })),
-        h('span', { class: 'txt' }, plain[i], showF ? h('span', { class: 'fml', text: p }) : null), chipFor(k)));
+      ul.append(h('li', { class: 'claim' + cls(k), 'data-k': k }, h('span', { class: 'no' }, h('span', { class: 'dot', text: String(i + 1) })),
+        h('span', { class: 'txt' }, rev[k] || plain[i], revTag(k), rev[k] ? h('span', { class: 'orig', text: plain[i] }) : null, showF && !rev[k] ? h('span', { class: 'fml', text: p }) : null, scoutEl(k), rbBtn(k)), chipFor(k)));
     });
-    ul.append(h('li', { class: 'joint' + (sess.focus === 'INF' ? ' focus' : ''), 'data-k': 'INF' }, h('span', { text: '↓ and so' }), chipFor('INF')));
-    ul.append(h('li', { class: 'claim concl' + (sess.focus === 'C' ? ' focus' : ''), 'data-k': 'C' }, h('span', { class: 'no', text: 'So' }),
-      h('span', { class: 'txt' }, plain[plain.length - 1].replace(/^So,?\s+/i, ''), showF ? h('span', { class: 'fml', text: arg.conclusion }) : null), chipFor('C')));
+    ul.append(h('li', { class: 'joint' + cls('INF'), 'data-k': 'INF' }, h('span', {}, '↓ and so', rbBtn('INF'), scoutEl('INF')), chipFor('INF')));
+    if (rev.INF) ul.append(h('li', { class: 'claim link-added' }, h('span', { class: 'no', text: '+' }), h('span', { class: 'txt' }, rev.INF, revTag('INF'))));
+    const cPlain = plain[plain.length - 1].replace(/^So,?\s+/i, '');
+    ul.append(h('li', { class: 'claim concl' + cls('C'), 'data-k': 'C' }, h('span', { class: 'no', text: 'So' }),
+      h('span', { class: 'txt' }, rev.C || cPlain, revTag('C'), rev.C ? h('span', { class: 'orig', text: cPlain }) : null, showF && !rev.C ? h('span', { class: 'fml', text: arg.conclusion }) : null, scoutEl('C'), rbBtn('C')), chipFor('C')));
   } else {
     ul.append(h('li', { class: 'sect', text: 'The claims it rests on' }));
     arg.premises.forEach((p, i) => {
       const k = 'P' + (i + 1);
-      ul.append(h('li', { class: 'claim' + (sess.focus === k ? ' focus' : ''), 'data-k': k }, h('span', { class: 'no', text: k }), h('span', { class: 'txt', text: p }), chipFor(k)));
+      ul.append(h('li', { class: 'claim' + cls(k), 'data-k': k }, h('span', { class: 'no', text: k }), h('span', { class: 'txt' }, rev[k] || p, revTag(k), rev[k] ? h('span', { class: 'orig', text: p }) : null, scoutEl(k), rbBtn(k)), chipFor(k)));
     });
-    ul.append(h('li', { class: 'joint' + (sess.focus === 'INF' ? ' focus' : ''), 'data-k': 'INF' }, h('span', { text: '↓ the step to the conclusion' }), chipFor('INF')));
-    ul.append(h('li', { class: 'claim concl' + (sess.focus === 'C' ? ' focus' : ''), 'data-k': 'C' }, h('span', { class: 'no', text: '∴ C' }), h('span', { class: 'txt', text: arg.conclusion }), chipFor('C')));
+    ul.append(h('li', { class: 'joint' + cls('INF'), 'data-k': 'INF' }, h('span', {}, '↓ the step to the conclusion', rbBtn('INF'), scoutEl('INF')), chipFor('INF')));
+    if (rev.INF) ul.append(h('li', { class: 'claim link-added' }, h('span', { class: 'no', text: '+' }), h('span', { class: 'txt' }, rev.INF, revTag('INF'))));
+    ul.append(h('li', { class: 'claim concl' + cls('C'), 'data-k': 'C' }, h('span', { class: 'no', text: '∴ C' }), h('span', { class: 'txt' }, rev.C || arg.conclusion, revTag('C'), rev.C ? h('span', { class: 'orig', text: arg.conclusion }) : null, scoutEl('C'), rbBtn('C')), chipFor('C')));
   }
   P.append(ul);
   if (simple() && PLAIN[arg.id]) P.append(h('button', { type: 'button', class: 'link more', text: state.showFormal ? 'Hide the exact wording' : 'Show the exact wording', onclick: () => { state.showFormal = !state.showFormal; save(); renderPanel(); } }));
 
   const foot = h('div', { class: 'panel-foot' });
+  if (sess.broken) foot.append(h('button', { type: 'button', class: 'link ref', text: simple() ? 'Watch it fall again' : 'Replay the collapse', disabled: busy, onclick: () => playFall(true) }));
   if (sess.moves.length) foot.append(h('button', { type: 'button', class: 'link' + (Date.now() - armedReset < 4000 ? ' ref' : ''), text: Date.now() - armedReset < 4000 ? 'Confirm reset' : 'Reset dispute', onclick: resetDispute }));
   if (isOwn) foot.append(h('button', { type: 'button', class: 'link' + (Date.now() - armedDelete < 4000 ? ' ref' : ''), text: Date.now() - armedDelete < 4000 ? 'Confirm removal' : 'Remove this argument', onclick: deleteCustom }));
   if (foot.childNodes.length) P.append(foot);
@@ -1717,12 +1938,13 @@ function moveEl(m, arg, idx){
   const youSeal = () => h('span', { class: 'seal you', text: 'YOU', 'aria-hidden': 'true' });
   switch (m.kind) {
     case 'objection': return card('ref', m.n + '.', refSeal(), [who('Refuter', 'on ' + tgt(m.target)), h('h3', { class: 'title', text: m.title }), body(m.text), q(m.question)]);
-    case 'defense': return card('you', m.n + '…', youSeal(), [who('You', 'defending ' + tgt(m.target)), body(m.text)]);
+    case 'defense': return card('you', m.n + '…', youSeal(), [who('You', 'defending ' + tgt(m.target)), m.tool ? h('div', { class: 'mtags' }, h('span', { class: 'mtag def', text: m.tool })) : null, body(m.text)]);
+    case 'rebuild': return card('you build', '', youSeal(), [who(simple() ? 'You rebuilt' : 'Your repair', m.target === 'INF' ? (simple() ? 'a missing link' : 'a supplied premise') : m.target === 'C' ? (simple() ? 'a smaller conclusion' : 'a weakened conclusion') : tgt(m.target)), body(m.text)]);
     case 'verdict': return h('div', { class: 'move verdict' }, h('div', { class: 'n' }), h('div', {},
         h('div', { class: 'vrow' }, h('span', { class: 'vlabel', text: 'Verdict on ' + tgt(m.target) }), stamp(m.verdict)),
         body(m.text)));
     case 'statement': return card('thk', '0.', portraitEl(arg, 34), [who(arg.thinker, 'opening'), body(m.text)]);
-    case 'attack': return card('you', m.n + '.', youSeal(), [who('You', 'objecting'), body(m.text)]);
+    case 'attack': return card('you', m.n + '.', youSeal(), [who('You', m.aim ? 'aiming at ' + tgt(m.aim) : 'objecting'), m.weapon ? h('div', { class: 'mtags' }, h('span', { class: 'mtag atk', text: m.weapon })) : null, body(m.text)]);
     case 'reply': return card('thk', m.n + '…', portraitEl(arg, 34), [who(arg.thinker, 'on ' + tgt(m.target)),
       h('div', { class: 'vrow' }, h('span', { class: 'vlabel', text: 'Your objection' }), stamp(m.verdict)),
       body(m.text), q(m.question)]);
@@ -1758,18 +1980,26 @@ function renderDispute(){
     $('#sideAttackText').textContent = sem ? 'You object; ' + nm + ' replies in character and grades each objection: glancing, serious, or decisive.' : 'You poke holes. ' + nm + ' answers back and rates your hit, from "Nice try" to "Knockout!"';
     $('#openerFine').textContent = sem ? 'Strict grading: vague replies, bare appeals to intuition, and changes of subject count as conceded. each move takes about 10 to 40 seconds.' : 'Each move takes about 10 to 40 seconds.';
   }
-  const needCall = !busy && !noMoves && (sess.awaiting === 'objection' || sess.awaiting === 'verdict-retry' || sess.awaiting === 'reply-retry');
+  const needCall = !busy && !noMoves && !ui.rebuild && (sess.awaiting === 'objection' || sess.awaiting === 'verdict-retry' || sess.awaiting === 'reply-retry');
   bar.hidden = !needCall;
   if (needCall) {
     if (sess.awaiting === 'objection') { $('#callText').textContent = 'The floor is the Refuter\'s.'; $('#callBtn').textContent = 'Call the next objection'; }
     else if (sess.awaiting === 'verdict-retry') { $('#callText').textContent = 'Your reply is in, but no verdict came back.'; $('#callBtn').textContent = 'Ask for the verdict again'; }
     else { $('#callText').textContent = 'Your objection is in, but no reply came back.'; $('#callBtn').textContent = 'Ask ' + nm + ' again'; }
   }
-  const showComp = busy || sess.awaiting === 'defense' || (sess.mode === 'attack' && sess.awaiting === 'attack' && !noMoves);
+  const showComp = busy || !!ui.rebuild || sess.awaiting === 'defense' || (sess.mode === 'attack' && sess.awaiting === 'attack' && !noMoves);
   comp.hidden = !showComp;
   if (showComp) {
     const ta = $('#reply');
-    if (sess.mode === 'defend') {
+    $('#scoutBtn').hidden = !(sess.mode === 'attack' && !ui.rebuild);
+    $('#scoutBtn').textContent = sess.scout ? (simple() ? 'Scout again' : 'Survey again') : (simple() ? 'Scout weak spots' : 'Survey weak points');
+    if (ui.rebuild) {
+      const k = ui.rebuild;
+      ta.placeholder = k === 'INF' ? (simple() ? 'Write the missing step that gets you from the points to the conclusion.' : 'State the premise that makes the inference valid without simply assuming the conclusion.') : k === 'C' ? (simple() ? 'Write a smaller conclusion that the points can actually carry.' : 'State a weaker conclusion the premises genuinely support.') : (simple() ? 'Rewrite ' + tgt(k) + ' so the objection no longer lands, but the argument still works.' : 'Revise ' + k + ' so it survives the objections while still doing its work in the argument.');
+      $('#sendBtn').textContent = simple() ? 'Rebuild' : 'Submit repair';
+      $('#hintBtn').hidden = true; $('#skipBtn').hidden = true;
+      $('#switchBtn').textContent = sess.mode === 'defend' ? 'Switch to attacking' : 'Switch to defending';
+    } else if (sess.mode === 'defend') {
       ta.placeholder = simple() ? 'Why does ' + tgt(sess.focus) + ' still hold up? Answer in your own words. An everyday example works. Ctrl/⌘ + Enter sends.' : 'Defend ' + labelOf(sess.focus || 'the argument') + '. Answer the question and give your reason. Ctrl/⌘ + Enter sends.';
       $('#sendBtn').textContent = 'Reply';
       $('#hintBtn').hidden = false; $('#hintBtn').textContent = 'What would ' + nm + ' say?';
@@ -1783,6 +2013,8 @@ function renderDispute(){
     }
     $('#sumBtn').hidden = !sess.moves.some(m => m.kind === 'verdict' || m.kind === 'reply');
     $('#stopBtn').hidden = !busy;
+    renderComposerExtras(arg, sess);
+    updateMeter(true);
   }
   if (!busy && wantScroll) { wantScroll = false; const last = M.lastElementChild; if (last && sess.moves.length) { try { last.scrollIntoView({ block: 'nearest' }); } catch (e) {} } }
 }
@@ -1790,7 +2022,7 @@ function updateControls(){
   const ai = aiUsable();
   const sess = getSession();
   ['stagePlay','stageSkip'].forEach(id => { const b = $('#' + id); if (b) b.disabled = busy; });
-  ['sideDefend','sideAttack','sendBtn','hintBtn','skipBtn','sumBtn','callBtn','switchBtn','dayTheirs','dayMine'].forEach(id => { const b = $('#' + id); if (b) b.disabled = busy || !ai; });
+  ['sideDefend','sideAttack','sendBtn','hintBtn','skipBtn','sumBtn','callBtn','switchBtn','dayTheirs','dayMine','scoutBtn'].forEach(id => { const b = $('#' + id); if (b) b.disabled = busy || !ai; });
   $('#stopBtn').hidden = !busy;
   $('#reply').disabled = busy;
   $('#hintBtn').disabled = busy || !ai || !lastAnswerable(sess);
@@ -1809,6 +2041,15 @@ $('#sumBtn').addEventListener('click', sumUp);
 $('#switchBtn').addEventListener('click', switchSides);
 $('#stopBtn').addEventListener('click', () => { if (ctl) ctl.abort(); });
 $('#callBtn').addEventListener('click', retry);
+$('#scoutBtn').addEventListener('click', () => scout());
+$('#reply').addEventListener('input', () => updateMeter());
+$('#soundBtn').addEventListener('click', () => { state.muted = !state.muted; save(); renderSound(); if (!state.muted) sfx.chime(); });
+$('#panel').addEventListener('click', e => {
+  if (e.target.closest('button')) return;
+  const li = e.target.closest('[data-k]'); if (!li || !$('#panel').classList.contains('aiming')) return;
+  const k = li.getAttribute('data-k'); if (getSession().status[k] !== 'conceded') setAim(k);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && ui.fallEl) closeFall(); });
 $('#tonePlain').addEventListener('click', () => setTone('plain'));
 $('#toneScholar').addEventListener('click', () => setTone('scholar'));
 $('#reply').addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); submit(); } });
@@ -1918,6 +2159,7 @@ function faceTick(){
   const now = Date.now(), still = reduceMotion();
   document.querySelectorAll('.pt.ph').forEach(el => {
     const fr = FRAMES[el.dataset.fid], img = el.firstChild; if (!fr || !img) return;
+    if (el.classList.contains('aghast')) { setFrame(img, fr, (now / 130 | 0) % 12 === 0 ? 'b' : 'o'); return; }
     if (el.classList.contains('talking') && !still) {
       el._t = (el._t || Math.floor(Math.random() * 10)) + 1;
       setFrame(img, fr, Math.random() < 0.12 ? 'c' : TALK[el._t % TALK.length]);
@@ -2084,7 +2326,16 @@ function Temple3D(){
   const root = new THREE.Group(); scene.add(root);
   const view = { user: 0, drag: false, x: 0, moved: 0 };
   dragYaw(canvas, view);
-  let argId = null, n = 0, W = 0, H = 3.2, TOP = 0.6, cols = [], arch = null, ped = null, spear = null, tweens = [], shake = 0, build = Infinity, speakK = null, lastStatus = {}, collapsed = false, focus = null;
+  let argId = null, n = 0, W = 0, H = 3.2, TOP = 0.6, cols = [], arch = null, ped = null, spear = null, tweens = [], shake = 0, build = Infinity, speakK = null, lastStatus = {}, collapsed = false, focus = null, lungeT = 0;
+  const ray = new THREE.Raycaster(), mv = new THREE.Vector2();
+  canvas.addEventListener('click', e => {
+    if (view.moved > 6 || !cols.length) return;
+    const r = canvas.getBoundingClientRect(); mv.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(mv, cam);
+    const hit = ray.intersectObjects(cols, true)[0]; if (!hit) return;
+    let o = hit.object; while (o && !(o.userData && o.userData.k)) o = o.parent;
+    if (o) pickFromTemple(o.userData.k);
+  });
 
   function clear(){ while (root.children.length) root.remove(root.children[0]); tweens = []; }
   function rebuild(arg, sess){
@@ -2131,11 +2382,12 @@ function Temple3D(){
     c.userData.parts.forEach((p, i) => {
       const to = restPose(p, i, side);
       if (instant || still3d()) { p.position.copy(to.p); p.quaternion.copy(to.q); return; }
-      tweens.push({ o: p, p0: p.position.clone(), p1: to.p, q0: p.quaternion.clone(), q1: to.q, t: -i * 0.09, d: 1.1 + i * 0.08, fall: true });
+      tweens.push({ o: p, p0: p.position.clone(), p1: to.p, q0: p.quaternion.clone(), q1: to.q, t: -i * 0.09 - (c.userData.delay || 0), d: 1.1 + i * 0.08, fall: true });
     });
-    c.userData.laurel.visible = false;
+    c.userData.laurel.visible = false; c.userData.down = true; c.userData.delay = 0;
   }
   function restore(c, instant){
+    c.userData.down = false;
     c.userData.parts.forEach((p, i) => {
       const hm = c.userData.home[i];
       if (p.position.distanceTo(hm.p) < 0.001) return;
@@ -2144,21 +2396,22 @@ function Temple3D(){
     });
   }
   function applyStatus(sess, instant){
-    const st = sess.status; let fell = 0, changed = false;
+    const st = sess.status, broken = !!sess.broken; let fell = 0, changed = false, wave = 0;
     cols.forEach(c => {
       const s = st[c.userData.k];
       if (lastStatus[c.userData.k] !== s) changed = true;
       const tint = s === 'held' ? 0xf7f0dc : s === 'weakened' ? 0xe9d6a8 : C3.marble;
       c.userData.parts.forEach(p => p.material.color.setHex(tint));
-      c.userData.laurel.visible = s === 'held';
-      c.userData.tilt = s === 'weakened' ? (c.position.x >= 0 ? -0.07 : 0.07) : 0;
-      if (s === 'conceded') { if (lastStatus[c.userData.k] !== 'conceded') topple(c, instant); fell++; }
-      else if (lastStatus[c.userData.k] === 'conceded') restore(c, instant);
+      const down = broken || s === 'conceded';
+      c.userData.laurel.visible = s === 'held' && !down;
+      c.userData.tilt = s === 'weakened' && !down ? (c.position.x >= 0 ? -0.07 : 0.07) : 0;
+      if (down) { if (!c.userData.down) { c.userData.delay = wave++ * 0.14; topple(c, instant); changed = true; } fell++; }
+      else if (c.userData.down) { restore(c, instant); changed = true; }
     });
     const inf = st.INF, con = st.C;
     arch.userData.mats.forEach(m => m.color.setHex(inf === 'held' ? 0xf6eed6 : inf === 'weakened' ? 0xe6d2a1 : inf === 'conceded' ? 0xe9c9bd : C3.marble));
     ped.userData.mat.color.setHex(con === 'held' ? 0xf6edd2 : con === 'weakened' ? 0xead6a6 : con === 'conceded' ? 0xecc9bd : C3.marble);
-    const shouldCollapse = inf === 'conceded' || con === 'conceded' || (n > 0 && fell / n > 0.5);
+    const shouldCollapse = broken || inf === 'conceded' || con === 'conceded' || (n > 0 && fell / n > 0.5);
     arch.userData.rotT = inf === 'weakened' ? 0.035 : 0;
     if (shouldCollapse !== collapsed) {
       collapsed = shouldCollapse;
@@ -2169,7 +2422,8 @@ function Temple3D(){
     }
     if (changed && !instant) shake = Math.max(shake, fell ? 0.9 : 0.35);
     lastStatus = Object.assign({}, st);
-    setFocus(sess.focus && st[sess.focus] === 'standing' ? sess.focus : (sess.focus || null));
+    const ak = aimingNow(sess) && ui.aim && st[ui.aim] !== 'conceded' ? ui.aim : null;
+    setFocus(ak || (sess.focus && st[sess.focus] === 'standing' ? sess.focus : (sess.focus || null)));
   }
   function targetOf(k){
     if (!k) return null;
@@ -2177,7 +2431,7 @@ function Temple3D(){
     if (k === 'C') return new THREE.Vector3(0, TOP + H + 1.2, 0.62);
     const c = cols.find(c => c.userData.k === k); return c ? new THREE.Vector3(c.position.x, TOP + H * 0.62, 0.42) : null;
   }
-  function setFocus(k){ focus = k; spear.visible = !!targetOf(k) && build === Infinity && !(collapsed && (k === 'INF' || k === 'C')); }
+  function setFocus(k){ focus = k; const c = cols.find(c => c.userData.k === k); spear.visible = !!targetOf(k) && build === Infinity && !(collapsed && (k === 'INF' || k === 'C')) && !(c && c.userData.down); }
   function tick(dt, t){
     view.user *= view.drag ? 1 : 0.985;
     const yaw = (still3d() ? 0 : Math.sin(t * 0.18) * 0.22) + 0.18 + view.user;
@@ -2220,7 +2474,8 @@ function Temple3D(){
       const from = tg.clone().add(new THREE.Vector3(1.0, 1.6, 1.4).normalize().multiplyScalar(0.55));
       spear.position.copy(from); spear.lookAt(tg);
       spear.rotateX(-Math.PI / 2);
-      spear.userData.inner.position.y = still3d() ? 0 : -0.15 - 0.15 * Math.sin(t * 4);
+      lungeT = Math.max(0, lungeT - dt);
+      spear.userData.inner.position.y = still3d() ? 0 : -0.15 - 0.15 * Math.sin(t * 4) - (lungeT > 0 ? Math.sin(Math.PI * (1 - lungeT / 0.45)) * 0.9 : 0);
     }
     S.r.render(scene, cam);
   }
@@ -2230,7 +2485,18 @@ function Temple3D(){
     show(arg, sess){ const key = arg.id + '|' + simple(); if (argId !== key || cols.length !== arg.premises.length) { rebuild(arg, sess); argId = key; } else applyStatus(sess, false); fit(); },
     setBuild(b, instant){ build = (b === undefined || b > n) ? Infinity : b; if (instant) cols.forEach((c, i) => { c.userData.scaleT = (build === Infinity || i < build) ? 1 : 0; }); if (spear) spear.visible = build === Infinity && !!targetOf(focus); },
     speak(k){ speakK = k; },
-    reset(){ argId = null; }
+    reset(){ argId = null; },
+    aim(k){ if (spear) setFocus(k || null); },
+    lunge(){ lungeT = 0.45; },
+    quake(a){ shake = Math.max(shake, a); },
+    rewind(){
+      if (!arch) return;
+      tweens = [];
+      cols.forEach(c => restore(c, true));
+      collapsed = false; lastStatus = {};
+      ped.position.set(0, ped.userData.y, 0); ped.quaternion.identity();
+      arch.position.set(0, arch.userData.y, 0); arch.rotation.set(0, 0, 0);
+    }
   };
 }
 
@@ -2424,6 +2690,477 @@ function ensureAgora(){ if (HAS3D && !agora3d) { try { agora3d = Agora3D(id => o
   g.addEventListener('pointermove', e => { const c = e.target.closest('.card'); if (!c) return; const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5; c.style.transform = 'translateY(-4px) rotateX(' + (-y * 7).toFixed(2) + 'deg) rotateY(' + (x * 9).toFixed(2) + 'deg)'; });
   g.addEventListener('pointerout', e => { const c = e.target.closest('.card'); if (c && !c.contains(e.relatedTarget)) c.style.transform = ''; });
 })();
+
+/* ---------- game feel: sound, particles, hits, the fall, aiming, repairs ---------- */
+const ui = { aim: null, weapon: null, starter: '', rebuild: null, pct: {}, fallToken: 0, fallEl: null, lastS: 0 };
+function resetUi(){ ui.aim = null; ui.weapon = null; ui.starter = ''; ui.rebuild = null; }
+function aimingNow(sess){ return sess.mode === 'attack' && !ui.rebuild && sess.moves.length > 0; }
+function isBroken(arg, sess){
+  const n = arg.premises.length, st = sess.status; let fell = 0;
+  for (let i = 1; i <= n; i++) if (st['P' + i] === 'conceded') fell++;
+  return st.INF === 'conceded' || st.C === 'conceded' || (n > 0 && fell / n > 0.5);
+}
+function tname(k){ if (!k) return simple() ? 'this' : 'the argument'; return simple() ? tgt(k) : (k === 'INF' ? 'the inference' : k === 'C' ? 'the conclusion' : k); }
+const cap1 = s => s.charAt(0).toUpperCase() + s.slice(1);
+function hammerIcon(){ const s = sv('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' }); s.append(sv('path', { d: 'M13.5 3.5l7 7-2.5 2.5-2-2-8.5 8.5a1.8 1.8 0 0 1-2.5-2.5L13.5 8.5l-2-2z', fill: 'currentColor' })); return s; }
+function renderSound(){ const b = $('#soundBtn'); if (!b) return; b.setAttribute('aria-pressed', state.muted ? 'false' : 'true'); b.title = state.muted ? 'Sound effects off' : 'Sound effects on'; }
+
+/* sound: everything is synthesized, nothing to download */
+let AC = null, noiseBuf = null;
+const VOL = 0.55;
+function audio(){
+  if (state.muted) return null;
+  try {
+    if (!AC) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); }
+    if (AC.state === 'suspended') AC.resume();
+    if (!noiseBuf) { noiseBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    return AC;
+  } catch (e) { return null; }
+}
+function envl(g, t0, dur, peak){ g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), t0 + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); }
+function noise(o){
+  const a = audio(); if (!a) return;
+  try {
+    const t0 = a.currentTime + (o.at || 0), s = a.createBufferSource(); s.buffer = noiseBuf; s.loop = true;
+    const f = a.createBiquadFilter(); f.type = o.type || 'lowpass'; f.frequency.setValueAtTime(o.f || 800, t0); if (o.f2) f.frequency.exponentialRampToValueAtTime(o.f2, t0 + o.d); f.Q.value = o.q || 0.8;
+    const g = a.createGain(); envl(g, t0, o.d, (o.v || 0.3) * VOL);
+    s.connect(f); f.connect(g); g.connect(a.destination); s.start(t0); s.stop(t0 + o.d + 0.05);
+  } catch (e) {}
+}
+function tone(o){
+  const a = audio(); if (!a) return;
+  try {
+    const t0 = a.currentTime + (o.at || 0), s = a.createOscillator(); s.type = o.w || 'sine';
+    s.frequency.setValueAtTime(o.f, t0); if (o.f2) s.frequency.exponentialRampToValueAtTime(o.f2, t0 + o.d);
+    const g = a.createGain(); envl(g, t0, o.d, (o.v || 0.2) * VOL);
+    s.connect(g); g.connect(a.destination); s.start(t0); s.stop(t0 + o.d + 0.05);
+  } catch (e) {}
+}
+const sfx = {
+  tick(){ tone({ f: 1500, d: 0.045, w: 'square', v: 0.035 }); },
+  whoosh(){ noise({ type: 'bandpass', f: 300, f2: 2600, q: 1.3, d: 0.34, v: 0.4 }); },
+  clang(){ tone({ f: 880, d: 0.55, w: 'triangle', v: 0.16 }); tone({ f: 1320, d: 0.4, w: 'triangle', v: 0.09 }); tone({ f: 1760, d: 0.25, w: 'sine', v: 0.05 }); noise({ type: 'highpass', f: 3000, d: 0.06, v: 0.16 }); },
+  crack(at){ noise({ type: 'highpass', f: 1800, d: 0.09, v: 0.5, at: at }); tone({ f: 220, f2: 70, d: 0.18, w: 'square', v: 0.05, at: at }); },
+  thud(at){ tone({ f: 110, f2: 38, d: 0.4, v: 0.5, at: at }); noise({ type: 'lowpass', f: 500, f2: 120, d: 0.3, v: 0.35, at: at }); },
+  boing(){ tone({ f: 330, f2: 170, d: 0.3, w: 'triangle', v: 0.15 }); tone({ f: 345, f2: 190, d: 0.3, w: 'sine', v: 0.07, at: 0.05 }); },
+  rumble(){ noise({ type: 'lowpass', f: 280, f2: 55, d: 2.2, v: 0.6 }); tone({ f: 48, f2: 30, d: 1.8, v: 0.3 }); },
+  chime(){ [660, 880, 1320].forEach((f, i) => tone({ f: f, d: 0.5, w: 'sine', v: 0.11, at: i * 0.09 })); },
+  fanfare(){ [523, 659, 784, 1046].forEach((f, i) => tone({ f: f, d: i === 3 ? 0.8 : 0.22, w: 'triangle', v: 0.12, at: i * 0.11 })); },
+  slam(){ tone({ f: 72, f2: 30, d: 0.55, v: 0.65 }); noise({ type: 'lowpass', f: 1000, f2: 100, d: 0.28, v: 0.45 }); },
+  taps(){ [0, 0.16, 0.32].forEach(t => { tone({ f: 1100, f2: 700, d: 0.07, w: 'square', v: 0.05, at: t }); noise({ type: 'bandpass', f: 2500, d: 0.05, v: 0.12, at: t }); }); },
+  sad(){ [392, 370, 349, 294].forEach((f, i) => tone({ f: f, f2: i === 3 ? 260 : f, d: i === 3 ? 0.7 : 0.2, w: 'triangle', v: 0.1, at: i * 0.2 })); }
+};
+document.addEventListener('pointerdown', () => { if (!state.muted) audio(); }, { once: true });
+
+/* particles on one fixed canvas; shards are real clones of the claim cards */
+const FX = h('div', { class: 'fx-layer', 'aria-hidden': 'true' });
+const fxCanvas = h('canvas', { class: 'fx-canvas' });
+FX.append(fxCanvas); document.body.append(FX);
+const fxCtx = fxCanvas.getContext('2d');
+const parts = [], shards = [];
+let fxRun = false, fxW = 0, fxH = 0, fxDpr = 1;
+function fxSize(){ fxDpr = Math.min(2, window.devicePixelRatio || 1); fxW = innerWidth; fxH = innerHeight; fxCanvas.width = Math.round(fxW * fxDpr); fxCanvas.height = Math.round(fxH * fxDpr); }
+fxSize(); addEventListener('resize', fxSize);
+const PAL = { marble: ['#F4EFE5', '#E7DDCA', '#D9CDB4', '#FFFDF8'], dust: ['#E9DCC2', '#D8C8A8', '#EFE5D2'], gold: ['#C9962B', '#E8C46A', '#FFE7A3'], confetti: ['#B8432A', '#1E5A9C', '#C9962B', '#6F7F34', '#F4EFE5', '#E8C46A'], ref: ['#B8432A', '#D9735A', '#F2B8A6'], blue: ['#1E5A9C', '#5B95D3', '#C9962B'] };
+const pickOf = a => a[Math.floor(Math.random() * a.length)];
+function burst(kind, x, y, n, o){
+  if (still3d()) return;
+  o = o || {};
+  const pal = PAL[o.pal || ({ dust: 'dust', spark: 'gold', confetti: 'confetti' }[kind] || 'marble')];
+  for (let i = 0; i < n; i++) {
+    const a = (o.angle != null ? o.angle : -Math.PI / 2) + (Math.random() - 0.5) * (o.spread != null ? o.spread : Math.PI * 1.6);
+    const sp = (o.speed || 5) * (0.4 + Math.random() * 0.9);
+    parts.push({ kind: kind, x: x + (Math.random() - 0.5) * (o.w || 0), y: y + (Math.random() - 0.5) * (o.h || 0), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, r: (o.size || 4) * (0.5 + Math.random()), rot: Math.random() * 6.283, vr: (Math.random() - 0.5) * 0.4, life: 0, max: (o.life || 1.4) * (0.7 + Math.random() * 0.6), c: pickOf(pal) });
+  }
+  fxStart();
+}
+function fxStart(){
+  if (fxRun) return; fxRun = true;
+  let last = performance.now();
+  requestAnimationFrame(function f(now){
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    fxStep(dt);
+    if (parts.length || shards.length) requestAnimationFrame(f);
+    else { fxRun = false; fxCtx.setTransform(1, 0, 0, 1, 0, 0); fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height); }
+  });
+}
+function starPath(g, r){ g.beginPath(); for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 - Math.PI / 2, q = i % 2 ? r * 0.45 : r; g.lineTo(Math.cos(a) * q, Math.sin(a) * q); } g.closePath(); g.fill(); }
+function fxStep(dt){
+  const g = fxCtx, k = dt * 60;
+  g.setTransform(fxDpr, 0, 0, fxDpr, 0, 0); g.clearRect(0, 0, fxW, fxH);
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i]; p.life += dt;
+    if (p.life > p.max || p.y > fxH + 60) { parts.splice(i, 1); continue; }
+    const t = p.life / p.max;
+    if (p.kind === 'dust') { p.vx *= 0.93; p.vy = p.vy * 0.93 - 0.03 * k; p.r += 0.7 * k; }
+    else if (p.kind === 'confetti') { p.vy += 0.16 * k; p.vx = p.vx * 0.985 + Math.sin(p.life * 7 + p.rot) * 0.18; p.vy = Math.min(p.vy, 3.4); }
+    else if (p.kind === 'spark') { p.vx *= 0.95; p.vy = p.vy * 0.95 + 0.06 * k; }
+    else p.vy += 0.34 * k;
+    p.x += p.vx * k; p.y += p.vy * k; p.rot += p.vr * k;
+    g.save(); g.translate(p.x, p.y); g.rotate(p.rot);
+    if (p.kind === 'dust') { g.globalAlpha = 0.38 * (1 - t); g.fillStyle = p.c; g.beginPath(); g.arc(0, 0, p.r, 0, 6.283); g.fill(); }
+    else if (p.kind === 'spark') { g.globalAlpha = 1 - t * t; g.fillStyle = p.c; starPath(g, p.r); }
+    else if (p.kind === 'confetti') { g.globalAlpha = Math.min(1, 3 * (1 - t)); g.fillStyle = p.c; g.scale(1, Math.cos(p.life * 9 + p.rot)); g.fillRect(-p.r, -p.r * 0.45, p.r * 2, p.r * 0.9); }
+    else { g.globalAlpha = Math.min(1, 2.5 * (1 - t)); g.fillStyle = p.c; g.strokeStyle = 'rgba(59,47,34,.6)'; g.lineWidth = 1; g.beginPath(); g.moveTo(-p.r, -p.r * 0.6); g.lineTo(p.r * 0.8, -p.r * 0.8); g.lineTo(p.r, p.r * 0.5); g.lineTo(-p.r * 0.5, p.r * 0.8); g.closePath(); g.fill(); g.stroke(); }
+    g.restore();
+  }
+  for (let i = shards.length - 1; i >= 0; i--) {
+    const s = shards[i]; s.life += dt; if (s.life < 0) continue;
+    if (s.life > s.max) { s.el.remove(); shards.splice(i, 1); continue; }
+    s.vy += 0.45 * k; s.x += s.vx * k; s.y += s.vy * k; s.rot += s.vr * k;
+    s.el.style.transform = 'translate(' + s.x.toFixed(1) + 'px,' + s.y.toFixed(1) + 'px) rotate(' + s.rot.toFixed(1) + 'deg)';
+    s.el.style.opacity = String(Math.max(0, Math.min(1, (s.max - s.life) / 0.5)));
+  }
+}
+function centerOf(el){ const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, r: r }; }
+function onScreen(r){ return r.width > 0 && r.bottom > 0 && r.top < innerHeight; }
+function partEl(k){ return k ? document.querySelector('#panel .claim[data-k="' + k + '"], #panel .joint[data-k="' + k + '"]') : null; }
+/* Break an element into triangles that tumble away under gravity. */
+function shatter(el, o){
+  if (!el || still3d()) return;
+  o = o || {};
+  const r = el.getBoundingClientRect(); if (!onScreen(r)) { el.style.visibility = 'hidden'; return; }
+  const cols = Math.max(2, Math.min(6, Math.round(r.width / 70))), rows = r.height > 64 ? 3 : 2, P = [];
+  for (let j = 0; j <= rows; j++) { P[j] = []; for (let i = 0; i <= cols; i++) { const ex = i === 0 || i === cols, ey = j === 0 || j === rows; P[j][i] = [(i / cols) * r.width + (ex ? 0 : (Math.random() - 0.5) * r.width / cols * 0.7), (j / rows) * r.height + (ey ? 0 : (Math.random() - 0.5) * r.height / rows * 0.7)]; } }
+  const tris = [];
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const a = P[j][i], b = P[j][i + 1], c = P[j + 1][i + 1], d = P[j + 1][i]; if (Math.random() < 0.5) tris.push([a, b, c], [a, c, d]); else tris.push([a, b, d], [b, c, d]); }
+  const cx0 = o.cx != null ? o.cx : r.left + r.width / 2, bg = o.bg || '#FCF8EF';
+  tris.forEach(t => {
+    const cx = (t[0][0] + t[1][0] + t[2][0]) / 3, cy = (t[0][1] + t[1][1] + t[2][1]) / 3;
+    const wrap = h('div', { class: 'shard' });
+    wrap.style.cssText = 'left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px;background:' + bg + ';clip-path:polygon(' + t.map(p => p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px').join(',') + ');transform-origin:' + cx.toFixed(1) + 'px ' + cy.toFixed(1) + 'px';
+    const clone = el.cloneNode(true);
+    clone.className = clone.className.replace(/\bfx-\w+/g, '');
+    clone.style.cssText = 'margin:0;width:' + r.width + 'px;height:' + r.height + 'px;visibility:visible;box-shadow:inset 0 0 0 1px rgba(59,47,34,.35)';
+    wrap.append(clone); FX.append(wrap);
+    const dir = (r.left + cx - cx0) / Math.max(80, r.width * 0.6);
+    shards.push({ el: wrap, x: 0, y: 0, vx: dir * (1.5 + Math.random() * 2.5) + (Math.random() - 0.5) * 2.5, vy: -(1.5 + Math.random() * 5), rot: 0, vr: (Math.random() - 0.5) * 10, life: -(o.delay || 0) - Math.random() * 0.12, max: 1.9 + Math.random() * 0.7 });
+  });
+  el.style.visibility = 'hidden';
+  fxStart();
+}
+function clearShards(){ shards.splice(0).forEach(s => s.el.remove()); }
+function pop(text, x, y, cls){
+  const e = h('div', { class: 'fx-pop ' + (cls || ''), text: text });
+  e.style.left = Math.max(80, Math.min(innerWidth - 80, x)) + 'px'; e.style.top = Math.max(40, y) + 'px';
+  FX.append(e); setTimeout(() => e.remove(), 1800);
+}
+function quake(size){
+  if (still3d()) return;
+  const a = $('#arena'); a.classList.remove('quake-s', 'quake-l'); void a.offsetWidth;
+  a.classList.add(size === 'l' ? 'quake-l' : 'quake-s');
+  setTimeout(() => a.classList.remove('quake-s', 'quake-l'), 1200);
+}
+function flash(el, cls, ms){ if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(() => el.classList.remove(cls), ms || 1100); }
+
+/* one verdict lands */
+const HIT_E = {
+  defend: { HOLDS: 'Blocked!', WEAKENED: 'Cracked…', CONCEDED: 'Toppled!' },
+  attack: { GLANCING: 'Bounced off!', SERIOUS: 'Crack! It wobbles', DECISIVE: 'Knockout!' }
+};
+function hitFx(k, verdict, mode){
+  const st = VERDICT_STATUS[verdict], el = partEl(k);
+  const label = simple() ? ((HIT_E[mode] && HIT_E[mode][verdict]) || vlabel(verdict)) : cap1(tname(k)) + ': ' + vlabel(verdict).toLowerCase();
+  if (temple3d) temple3d.quake(st === 'conceded' ? 1.1 : st === 'weakened' ? 0.5 : 0.25);
+  if (st === 'conceded') { sfx.crack(); sfx.thud(0.12); quake('s'); }
+  else if (st === 'weakened') { sfx.crack(); sfx.boing(); }
+  else sfx.clang();
+  if (!el) return;
+  const c = centerOf(el);
+  flash(el, st === 'conceded' ? 'fx-crumble' : st === 'weakened' ? 'fx-wobble' : 'fx-shield');
+  if (!onScreen(c.r)) return;
+  if (st === 'conceded') { burst('chip', c.x, c.r.bottom - 6, 18, { w: c.r.width * 0.8, speed: 5.5, spread: Math.PI * 1.2 }); burst('dust', c.x, c.r.bottom, 9, { w: c.r.width, speed: 1.5, size: 9, life: 1.2 }); }
+  else if (st === 'weakened') burst('chip', c.x, c.y, 7, { speed: 3.5, w: c.r.width * 0.5 });
+  else burst('spark', c.r.left + Math.min(40, c.r.width / 2), c.y, 16, { spread: Math.PI * 2, speed: 4, size: 5, life: 0.9 });
+  pop(label, c.x, c.r.top, 'v-' + st);
+}
+function streakFx(fresh, mode){
+  const sess = getSession();
+  const good = mode === 'defend' ? fresh.verdict === 'HOLDS' : (fresh.verdict === 'SERIOUS' || fresh.verdict === 'DECISIVE');
+  sess.streak = good ? (sess.streak || 0) + 1 : 0;
+  if (good && sess.streak >= 2 && simple()) setTimeout(() => {
+    const P = $('#panel'); if (!P) return; const c = centerOf(P.querySelector('.temple3d, .bridge') || P);
+    if (onScreen(c.r)) pop((mode === 'defend' ? 'Defense streak ×' : 'Hit streak ×') + sess.streak, c.x, c.r.top + 34, 'streak');
+    sfx.chime();
+  }, 700);
+}
+function brokeTitle(sess, fresh){
+  const i = sess.moves.indexOf(fresh);
+  for (let j = i - 1; j >= 0; j--) {
+    const m = sess.moves[j];
+    if (fresh.kind === 'verdict' && m.kind === 'objection') return m.title;
+    if (fresh.kind === 'verdict' && m.kind === 'rebuild') return simple() ? 'a repair that didn’t hold' : 'a failed repair';
+    if (fresh.kind === 'reply' && m.kind === 'attack') { const t = m.text.replace(/\s+/g, ' '); return '“' + (t.length > 90 ? t.slice(0, 88).replace(/\s\S*$/, '') + '…' : t) + '”'; }
+  }
+  return '';
+}
+function afterMove(prevLen, mode){
+  if (state.view !== 'arena') return;
+  const arg = currentArg(), sess = getSession();
+  const fresh = sess.moves.slice(prevLen).find(m => (m.kind === 'verdict' || m.kind === 'reply') && m.verdict);
+  if (fresh) { hitFx(fresh.target, fresh.verdict, mode); streakFx(fresh, mode); }
+  const now = isBroken(arg, sess);
+  if (now && !sess.broken) {
+    sess.broken = true; sess.brokeBy = fresh ? { k: fresh.target, title: brokeTitle(sess, fresh) } : null; save();
+    const id = arg.id;
+    setTimeout(() => { if (state.view === 'arena' && currentArg().id === id) playFall(false); }, fresh && !still3d() ? 1000 : 60);
+  } else if (!now && sess.broken) {
+    sess.broken = false; sess.brokeBy = null; save(); renderPanel(); rebuiltFx();
+  }
+  if (fresh || now !== !!sess.broken) save();
+}
+
+/* the fall */
+async function playFall(replay){
+  const arg = currentArg(), sess = getSession();
+  if (state.view !== 'arena' || busy) return;
+  closeFall(true);
+  const my = ++ui.fallToken, fast = still3d(), fun = simple(), win = sess.mode === 'attack';
+  const ov = h('div', { class: 'fall ' + (fun ? 'fun' : 'sem'), role: 'dialog', 'aria-modal': 'true', 'aria-label': fun ? 'The argument fell down' : 'The argument has collapsed' });
+  document.body.append(ov); ui.fallEl = ov;
+  const tp = temple3d;
+  if (!fast) {
+    const s0 = $('#panel .temple3d') || $('#panel .bridge') || $('#panel'), r = s0.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) { try { s0.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} await wait(550); if (my !== ui.fallToken) return; }
+  }
+  if (tp && replay) { tp.rewind(); await wait(140); if (my !== ui.fallToken) return; }
+  renderPanel();
+  const scene = $('#panel .temple3d') || $('#panel .bridge') || $('#panel');
+  if (tp) tp.quake(2.6);
+  sfx.rumble(); quake('l');
+  if (!fast) {
+    const list = $('#panel .claims'); if (list) list.classList.add('cracking');
+    sfx.crack(0.25); sfx.crack(0.5);
+    await wait(700); if (my !== ui.fallToken) return;
+    const items = Array.from(document.querySelectorAll('#panel .claims > li:not(.sect)'));
+    const pc = centerOf($('#panel'));
+    items.forEach((li, i) => setTimeout(() => { if (my !== ui.fallToken) return; shatter(li, { cx: pc.x }); if (i % 2 === 0) sfx.thud(); }, i * 85));
+    const sc = centerOf(scene);
+    if (onScreen(sc.r)) { burst('dust', sc.x, sc.r.bottom - 12, 26, { w: sc.r.width, speed: 2.4, size: 11, life: 1.9 }); burst('chip', sc.x, sc.r.bottom - 30, 30, { w: sc.r.width * 0.7, speed: 6.5 }); }
+    await wait(items.length * 85 + 420); if (my !== ui.fallToken) return;
+  }
+  ov.classList.add('dim');
+  const face = portraitEl(arg, fun ? 150 : 118); face.classList.add('aghast'); face.classList.remove('talking');
+  const faceBox = h('div', { class: 'fall-face' }, face,
+    fun ? h('span', { class: 'stars', 'aria-hidden': 'true' }, h('i', { text: '★' }), h('i', { text: '✦' }), h('i', { text: '★' })) : null,
+    fun ? h('span', { class: 'sweat', 'aria-hidden': 'true' }) : null);
+  const stamp = h('div', { class: 'fall-stamp', text: fun ? (win ? 'KNOCKOUT!' : 'TIMBER!') : 'REFUTED' });
+  ov.append(faceBox, stamp);
+  sfx.slam();
+  if (!fast) {
+    setTimeout(() => { if (my !== ui.fallToken) return; const c = centerOf(stamp); burst('dust', c.x, c.r.bottom, 20, { w: c.r.width, speed: 3, size: 12, life: 1.2 }); }, 300);
+    if (fun && win) {
+      burst('confetti', 0, innerHeight, 80, { angle: -Math.PI / 3, spread: 0.7, speed: 17, size: 6, life: 3.4 });
+      burst('confetti', innerWidth, innerHeight, 80, { angle: -2 * Math.PI / 3, spread: 0.7, speed: 17, size: 6, life: 3.4 });
+      setTimeout(() => sfx.fanfare(), 250);
+    } else if (fun) setTimeout(() => sfx.sad(), 300);
+  }
+  await wait(fast ? 0 : 1200); if (my !== ui.fallToken) return;
+  ov.append(fallCard(arg, sess, win, fun));
+  ov.classList.add('ready');
+  const first = ov.querySelector('.fall-card .btn'); if (first) try { first.focus({ preventScroll: true }); } catch (e) {}
+}
+function fallStat(n, l){ return h('div', {}, h('b', { text: n }), h('span', { text: l })); }
+function fallCard(arg, sess, win, fun){
+  const keys = keysOf(arg), standing = keys.filter(k => sess.status[k] !== 'conceded').length, held = keys.filter(k => sess.status[k] === 'held').length;
+  const by = sess.brokeBy, nm = shortName(arg);
+  const title = fun ? (win ? 'You knocked down ' + nm + '’s argument!' : 'The Refuter brought it down.') : (win ? 'Your objections refute the argument.' : 'The argument, as defended, is refuted.');
+  return h('div', { class: 'fall-card' },
+    h('h2', { text: title }),
+    by && by.title ? h('p', { class: 'why' }, fun ? 'The blow that did it: ' : 'Decisive move: ', h('b', { text: by.title }), ', on ' + tgt(by.k) + '.') : null,
+    h('div', { class: 'stats' }, fallStat(standing + '/' + keys.length, fun ? 'still standing' : 'parts standing'), fallStat(String(held), fun ? 'held up' : 'held'), fallStat(String((sess.nObj || 0) + (sess.nAtk || 0)), fun ? 'rounds' : 'exchanges')),
+    h('p', { class: 'next', text: fun ? (win ? 'Think ' + nm + ' could patch it? Switch sides and try to rebuild it.' : 'Can you patch it? Rewrite a fallen point so it survives, then see if it stands.') : 'A refutation invites repair: revise a conceded premise, supply the missing premise, or weaken the conclusion, and the Refuter will judge the repair.' }),
+    h('div', { class: 'row' },
+      h('button', { type: 'button', class: 'btn primary', onclick: () => { closeFall(); startRebuild(by && by.k); } }, hammerIcon(), ' ' + (fun ? 'Rebuild it' : 'Repair the argument')),
+      h('button', { type: 'button', class: 'btn', text: 'Sum up', onclick: () => { closeFall(); sumUp(); } }),
+      h('button', { type: 'button', class: 'link', text: fun ? 'Watch it fall again' : 'Replay', onclick: () => playFall(true) }),
+      h('button', { type: 'button', class: 'link', text: 'Close', onclick: () => closeFall() })));
+}
+function closeFall(silent){
+  ui.fallToken++;
+  const had = !!ui.fallEl;
+  if (ui.fallEl) { ui.fallEl.remove(); ui.fallEl = null; }
+  clearShards();
+  if (had && !silent && state.view === 'arena') renderPanel();
+}
+function rebuiltFx(){
+  const P = $('#panel'); if (!P) return;
+  const c = centerOf(P.querySelector('.temple3d') || P.querySelector('.bridge') || P);
+  sfx.fanfare();
+  if (onScreen(c.r)) { burst('spark', c.x, c.y, 44, { spread: Math.PI * 2, speed: 6, size: 6, life: 1.3 }); pop(simple() ? 'Back on its feet!' : 'Argument restored', c.x, c.r.top + 40, 'v-held'); }
+}
+
+/* repairs */
+function startRebuild(k){
+  const arg = currentArg(), sess = getSession();
+  if (busy || !aiUsable()) return;
+  if (sess.mode !== 'defend') switchSides();
+  if (!k || sess.status[k] !== 'conceded') k = keysOf(arg).find(x => sess.status[x] === 'conceded') || null;
+  if (!k) return;
+  ui.rebuild = k; ui.weapon = null; ui.starter = '';
+  renderPanel(); renderDispute(); updateControls();
+  const note = $('#rebuildNote');
+  const ta = $('#reply');
+  ta.value = rebuildSeed(arg, sess, k);
+  try { $('#composer').scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+  ta.focus({ preventScroll: true }); try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) {}
+  flash(note, 'fx-build'); sfx.taps(); updateMeter();
+}
+function rebuildSeed(arg, sess, k){
+  const rev = sess.revised || {};
+  if (rev[k]) return rev[k];
+  if (k === 'INF') return '';
+  if (k === 'C') return simple() ? plainOf(arg)[arg.premises.length].replace(/^So,?\s+/i, '') : arg.conclusion;
+  const i = +k.slice(1) - 1; return simple() ? plainOf(arg)[i] : arg.premises[i];
+}
+function cancelRebuild(){ ui.rebuild = null; $('#reply').value = ''; renderPanel(); renderDispute(); updateControls(); }
+function buildFx(k){
+  sfx.taps();
+  const el = partEl(k); if (!el) return;
+  flash(el, 'fx-build', 1200);
+  const c = centerOf(el); if (onScreen(c.r)) burst('spark', c.x, c.r.bottom, 12, { spread: Math.PI, speed: 3, size: 4, life: 0.8 });
+}
+function braceFx(k){ const el = partEl(k); if (el) flash(el, 'fx-brace', 700); sfx.tick(); }
+
+/* attacks: aim, throw */
+function pickFromTemple(k){
+  const sess = getSession();
+  if (busy) return;
+  if (aimingNow(sess) && sess.status[k] !== 'conceded') setAim(k);
+  else if (sess.mode === 'defend' && sess.status[k] === 'conceded') startRebuild(k);
+}
+function setAim(k){
+  const sess = getSession();
+  if (busy || !aimingNow(sess)) return;
+  ui.aim = ui.aim === k ? null : k;
+  const ta = $('#reply');
+  if (ui.weapon && ta.value === ui.starter) { const w = WEAPONS.attack.find(x => x.id === ui.weapon); if (w) { ta.value = (simple() ? w.te : w.ts)(tname(ui.aim)); ui.starter = ta.value; } }
+  sfx.tick();
+  renderPanel(); renderComposerExtras(currentArg(), sess); updateMeter();
+  if (ui.aim) { const el = partEl(ui.aim); if (el) { const c = centerOf(el); if (onScreen(c.r)) burst('spark', c.r.left + 16, c.y, 8, { spread: Math.PI * 2, speed: 2.2, size: 3.5, life: 0.5, pal: 'ref' }); } }
+}
+const SPEAR_SVG = '<svg viewBox="0 0 58 14" aria-hidden="true"><path d="M2 7h40" stroke="#6b4a2b" stroke-width="3" stroke-linecap="round"/><path d="M40 1.5L57 7 40 12.5 43 7z" fill="#A8743A" stroke="#3b2f22" stroke-width="1.2" stroke-linejoin="round"/><path d="M1 3.5l7 3.5-7 3.5z" fill="#B8432A"/></svg>';
+function throwFx(k){
+  if (temple3d) { if (k) temple3d.aim(k); temple3d.lunge(); }
+  sfx.whoosh();
+  const from = $('#sendBtn'), to = (k && partEl(k)) || $('#panel .temple3d') || $('#panel .bridge');
+  if (still3d() || !from || !to) return;
+  const a = centerOf(from), b = centerOf(to);
+  if (!onScreen(b.r)) return;
+  const sp = h('div', { class: 'fx-spear' }); sp.innerHTML = SPEAR_SVG; FX.append(sp);
+  const t0 = performance.now(), d = 540, arc = Math.min(240, Math.abs(a.x - b.x) * 0.3 + 90);
+  (function f(now){
+    const t = Math.min(1, (now - t0) / d), x = lerp(a.x, b.x, t), y = lerp(a.y, b.y, t) - Math.sin(Math.PI * t) * arc;
+    const ang = Math.atan2((b.y - a.y) - Math.cos(Math.PI * t) * Math.PI * arc, b.x - a.x);
+    sp.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) rotate(' + ang.toFixed(3) + 'rad)';
+    if (t < 1) requestAnimationFrame(f);
+    else { sp.remove(); burst('spark', b.x, b.y, 12, { spread: Math.PI * 2, speed: 3.2, size: 4, life: 0.6, pal: 'ref' }); flash(to, 'fx-impact', 500); sfx.thud(); }
+  })(t0);
+}
+
+/* move chips and the charge meter */
+const WEAPONS = {
+  attack: [
+    { id: 'counter', e: 'Counterexample', s: 'Counterexample', te: t => 'Here’s a case where ' + t + ' fails: ', ts: t => 'Counterexample to ' + t + ': ' },
+    { id: 'assume', e: 'Hidden assumption', s: 'Hidden premise', te: t => cap1(t) + ' quietly assumes that ', ts: t => cap1(t) + ' presupposes that ' },
+    { id: 'follow', e: 'Doesn’t follow', s: 'Invalid inference', te: () => 'Even if every point is true, the conclusion doesn’t follow, because ', ts: () => 'The inference fails: the premises could all be true while the conclusion is false, since ' },
+    { id: 'vague', e: 'Too vague', s: 'Equivocation', te: t => 'It depends what ' + (t === 'this' ? 'the argument' : t) + ' means. If it means …, then ', ts: t => 'Equivocation in ' + t + ': the term “…” shifts between ' },
+    { id: 'toomuch', e: 'Proves too much', s: 'Parity of reasoning', te: () => 'If this argument worked, it would also prove that ', ts: () => 'By parity of reasoning, an argument of the same form would establish that ' }
+  ],
+  defend: [
+    { id: 'example', e: 'Give an example', s: 'Example', te: () => 'Think of it this way: ', ts: () => 'Consider the case of ' },
+    { id: 'clarify', e: 'Clarify it', s: 'Clarify', te: t => 'What ' + t + ' really means is ', ts: t => 'On the intended reading, ' + t + ' says that ' },
+    { id: 'narrow', e: 'Narrow it', s: 'Restrict', te: t => 'Fair, but ' + t + ' only needs to say that ', ts: t => cap1(t) + ' need only be read as claiming that ' },
+    { id: 'mistake', e: 'Spot their mistake', s: 'Reject a presupposition', te: () => 'Your objection assumes that ', ts: () => 'The objection presupposes that ' },
+    { id: 'bite', e: 'Bite the bullet', s: 'Concede and contain', te: () => 'Fine, I accept that, and the argument still works because ', ts: () => 'Granting the point, the argument survives, since ' }
+  ]
+};
+function toolName(){
+  if (!ui.weapon) return null;
+  const sess = getSession(), list = WEAPONS[sess.mode === 'attack' ? 'attack' : 'defend'], w = list.find(x => x.id === ui.weapon);
+  return w ? (simple() ? w.e : w.s) : null;
+}
+function useTool(w, attack){
+  const ta = $('#reply'), sess = getSession();
+  if (busy) return;
+  const s = (simple() ? w.te : w.ts)(attack ? tname(ui.aim) : tname(sess.focus));
+  const cur = ta.value, onlyStarter = !cur.trim() || cur === ui.starter;
+  if (ui.weapon === w.id && onlyStarter) { ui.weapon = null; ta.value = ''; ui.starter = ''; }
+  else { ui.weapon = w.id; ta.value = onlyStarter ? s : cur.replace(/\s*$/, '') + '\n' + s; ui.starter = onlyStarter ? s : ''; }
+  sfx.tick(); ta.focus(); try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) {}
+  renderComposerExtras(currentArg(), sess); updateMeter();
+}
+function renderComposerExtras(arg, sess){
+  const aimBar = $('#aimBar'), tools = $('#tools'), note = $('#rebuildNote');
+  const attack = aimingNow(sess);
+  note.hidden = !ui.rebuild; note.innerHTML = '';
+  if (ui.rebuild) {
+    const k = ui.rebuild;
+    const head = simple() ? (k === 'INF' ? 'Add the missing link' : k === 'C' ? 'Scale back the conclusion' : 'Rebuild ' + tgt(k)) : (k === 'INF' ? 'Supply the missing premise' : k === 'C' ? 'Weaken the conclusion' : 'Revise ' + k);
+    const tip = simple() ? (k === 'INF' ? 'What extra claim would make the conclusion actually follow? Careful: it can’t just repeat the conclusion.' : k === 'C' ? 'Claim less, so the points can carry it. But not so little that it says nothing.' : 'Edit it so the objection no longer lands. Narrow it, add an “unless”, or swap in a safer claim that still does the job.') : (k === 'INF' ? 'The added premise must close the gap without begging the question.' : k === 'C' ? 'Find the strongest conclusion the premises genuinely support.' : 'The revision must survive the objection and still do its work in the argument; the Refuter will check both.');
+    note.append(h('b', { text: head }), h('span', { text: tip }), h('button', { type: 'button', class: 'link', text: 'Cancel', disabled: busy, onclick: cancelRebuild }));
+  }
+  aimBar.hidden = !attack; aimBar.innerHTML = '';
+  if (attack) {
+    aimBar.append(h('span', { class: 'lab', text: simple() ? 'Aim at' : 'Target' }));
+    keysOf(arg).forEach(k => {
+      const st = sess.status[k], label = k === 'INF' ? (simple() ? 'the jump' : 'INF') : k === 'C' ? (simple() ? 'So…' : 'C') : (simple() ? k.slice(1) : k);
+      aimBar.append(h('button', { type: 'button', class: 'tg', 'data-s': st, 'aria-pressed': ui.aim === k ? 'true' : 'false', disabled: busy || st === 'conceded', title: st === 'conceded' ? 'Already down' : 'Aim at ' + tgt(k), text: label, onclick: () => setAim(k) }));
+    });
+  }
+  tools.innerHTML = ''; tools.hidden = !!ui.rebuild || sess.mode === 'defend' && sess.awaiting !== 'defense' && !busy;
+  if (!tools.hidden) {
+    tools.append(h('span', { class: 'lab', text: attack ? (simple() ? 'Pick a move' : 'Line of attack') : (simple() ? 'Shield moves' : 'Line of defense') }));
+    WEAPONS[attack || sess.mode === 'attack' ? 'attack' : 'defend'].forEach(w => tools.append(h('button', { type: 'button', class: 'tool ' + (sess.mode === 'attack' ? 'atk' : 'def'), 'aria-pressed': ui.weapon === w.id ? 'true' : 'false', disabled: busy, text: simple() ? w.e : w.s, onclick: () => useTool(w, sess.mode === 'attack') })));
+  }
+}
+function sharpness(text, attack){
+  const t = text.trim(), w = t ? t.split(/\s+/).length : 0;
+  if (!w) return { s: 0, tip: '' };
+  const reason = /\b(because|since|so that|therefore|which means|that means|so|otherwise|unless)\b/i.test(t);
+  const example = /\b(for example|for instance|imagine|suppose|e\.g\.|like when|consider|think of|take the|say you|picture)\b/i.test(t);
+  const pointed = attack ? (!!ui.aim || /\b(point|premise|p\d|conclusion|step|jump|claim|assum|follow)/i.test(t)) : (!!ui.rebuild || /\b(but|however|only|unless|not|doesn|isn|still|even if|misses|assumes)\b/i.test(t));
+  let s = 0; if (w >= 8) s++; if (w >= 25) s++; if (reason) s++; if (example) s++; if (pointed) s++;
+  if (ui.starter && t === ui.starter.trim()) s = Math.min(s, 1);
+  const tip = !w ? '' : !reason ? 'add a reason (“because…”)' : !example ? 'an example would sharpen it' : !pointed ? (attack ? 'say which point you’re hitting' : 'say why the objection misses') : w < 25 ? 'a sentence more would help' : '';
+  return { s: s, tip: tip };
+}
+function updateMeter(quiet){
+  const m = $('#meter'); if (!m) return;
+  const sess = getSession(), attack = sess.mode === 'attack' && !ui.rebuild;
+  const v = sharpness($('#reply').value, attack);
+  const names = simple() ? (attack ? ['', 'Blunt', 'Dull', 'Getting sharp', 'Sharp', 'Razor-sharp'] : ['', 'Flimsy', 'Shaky', 'Solid-ish', 'Sturdy', 'Rock-solid']) : ['', 'Thin', 'Thin', 'Developing', 'Developed', 'Well developed'];
+  m.dataset.s = v.s; m.classList.toggle('atk', attack);
+  m.querySelector('.ml').textContent = v.s ? names[v.s] + (v.tip ? ' · ' + v.tip : '') : (simple() ? (attack ? 'Charge meter: a reason, an example and a clear target sharpen your hit' : 'Sturdiness: a reason and an example make it hold') : 'Checks for a reason, an example and a stated target. The Refuter does the real grading.');
+  m.querySelectorAll('.pips i').forEach((p, i) => p.classList.toggle('on', i < v.s));
+  if (!quiet && v.s > ui.lastS) { flash(m, 'bump', 320); if (v.s === 5) { sfx.chime(); const c = centerOf(m.querySelector('.pips')); burst('spark', c.x, c.y, 10, { spread: Math.PI * 2, speed: 2.5, size: 3.5, life: 0.6 }); } else sfx.tick(); }
+  ui.lastS = v.s;
+}
+
+/* scouting report */
+async function scout(){
+  const arg = currentArg(), sess = getSession();
+  if (busy || sess.mode !== 'attack') return;
+  busy = true; setErr(''); updateControls(); renderDispute();
+  startLive('hint', simple() ? 'Scouting for weak spots' : 'Surveying the argument');
+  let ok = false;
+  try {
+    const res = await callClaude(scoutPrompt(arg, sess), { cache: false, onText: () => {} });
+    const out = {};
+    (res.text || '').split('\n').forEach(line => {
+      const m = line.match(/^[\s*#>-]*(P\d+|INF|C)\b[\s*]*[|:\-–—]\s*([123])\s*[|:\-–—]\s*(.+)$/i);
+      if (m) { const k = m[1].toUpperCase(); if (sess.status[k] !== undefined && sess.status[k] !== 'conceded') out[k] = { w: +m[2], tip: m[3].replace(/[*_]/g, '').trim() }; }
+    });
+    if (Object.keys(out).length) { sess.scout = out; ok = true; } else setErr(simple() ? 'The scout came back empty-handed. Try again.' : 'No usable survey came back. Try again.');
+  } catch (e) { handleErr(e); }
+  finally {
+    busy = false; endLive(); save(); renderPanel(); renderDispute(); updateControls();
+    if (ok) {
+      sfx.chime();
+      Object.keys(sess.scout).forEach(k => { if (sess.scout[k].w === 3) { const el = partEl(k); if (el) { flash(el, 'fx-wobble', 1000); const c = centerOf(el); if (onScreen(c.r)) { burst('spark', c.r.left + 16, c.y, 14, { spread: Math.PI * 2, speed: 3, size: 4, life: 0.8, pal: 'ref' }); pop(simple() ? 'Weak spot!' : 'Most exposed', c.x, c.r.top, 'v-conceded'); } } } });
+    }
+  }
+}
 
 /* ---------- boot ---------- */
 function start(data){
