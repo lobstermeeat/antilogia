@@ -487,6 +487,17 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
 .meter[data-s="5"] .pips i.on{background:var(--gold);box-shadow:0 0 8px rgba(201,150,43,.75)}
 .meter.bump .pips{animation:bump .3s ease}
 @keyframes bump{50%{transform:scale(1.15)}}
+.atk-hint{border:1.5px solid var(--gold);background:linear-gradient(180deg,#FFFBEF,#FBF3DF);border-radius:12px;padding:10px 14px 10px;display:grid;gap:8px;box-shadow:0 6px 16px -12px rgba(120,80,10,.6)}
+.atk-hint .hh{display:flex;align-items:center;gap:8px;font:700 11.5px/1 var(--f-caps);letter-spacing:.08em;text-transform:uppercase;color:#7A5410}
+.atk-hint .hh .dots3{display:inline-flex;gap:3px}.atk-hint .hh .dots3 i{width:7px;height:7px;border-radius:50%;background:#E6DCC8}.atk-hint .hh .dots3 i.on{background:var(--gold)}
+.atk-hint .hh .x{margin-left:auto;background:none;border:0;color:var(--mute);font:400 18px/1 var(--f-ui);cursor:pointer;padding:0 2px}
+.atk-hint .lv{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:start;animation:noteIn .45s ease both}
+.atk-hint .lv .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font:700 11px/1 var(--f-caps);background:var(--gold);color:#fff}
+.atk-hint .lv b{display:block;font:700 12px/1.2 var(--f-caps);letter-spacing:.04em;color:var(--ink);margin-bottom:2px}
+.atk-hint .lv p{margin:0;font:400 15px/1.42 var(--f-display);color:var(--ink)}
+.atk-hint .lv.loading p{color:var(--mute);font-style:italic}
+.atk-hint .acts{display:flex;gap:8px 14px;flex-wrap:wrap;align-items:center}
+.atk-hint .acts .btn{padding:8px 14px;font-size:13px}
 .rebuild-note{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:baseline;padding:10px 14px;border:1.5px dashed var(--amber);background:var(--amber-soft);border-radius:12px;font:400 14px/1.4 var(--f-ui)}
 .rebuild-note b{font:700 13px/1.2 var(--f-caps);letter-spacing:.04em;color:#7A5410}
 .rebuild-note span{flex:1;min-width:200px;color:var(--ink)}
@@ -733,10 +744,12 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
         <div class="rebuild-note" id="rebuildNote" hidden></div>
         <div class="aim-bar" id="aimBar" hidden></div>
         <div class="tools" id="tools" hidden></div>
+        <div class="atk-hint" id="atkHint" hidden aria-live="polite"></div>
         <textarea id="reply" rows="4"></textarea>
         <div class="meter" id="meter" title="A rough guide only. Claude does the real judging."><span class="pips"><i></i><i></i><i></i><i></i><i></i></span><span class="ml"></span></div>
         <div class="row">
           <button type="button" class="btn primary" id="sendBtn">Reply</button>
+          <button type="button" class="link" id="atkHintBtn" hidden>Need a hint?</button>
           <button type="button" class="link" id="scoutBtn" hidden>Scout weak spots</button>
           <button type="button" class="link" id="hintBtn">What would they say?</button>
           <button type="button" class="link" id="skipBtn">Skip this one</button>
@@ -1129,7 +1142,7 @@ const PLAIN = {
 };
 const FIELDS = ['All','Start here','Everyday','Right & wrong','Mind','Self','God','Knowledge','Reality','Society','Puzzles','Yours'];
 const LS = 'antilogia.v3';
-const KEYS = ['TARGET','TITLE','OBJECTION','QUESTION','VERDICT','ASSESSMENT','REPLY','STATEMENT'];
+const KEYS = ['TARGET','TITLE','OBJECTION','QUESTION','VERDICT','ASSESSMENT','REPLY','STATEMENT','WEAPON','NUDGE','ANGLE','EXAMPLE','STARTER'];
 const ERR = {
   not_granted: 'This page has not been allowed to use Claude, so the Refuter cannot play. Reload the page to be asked again.',
   sampling_disabled: 'Claude is not available on this account, so live refutation is off.',
@@ -1517,6 +1530,16 @@ function scoutPrompt(arg, sess){
     'Reply with one line per part and nothing else, in exactly this shape:\n' + open.map(k => k + ' | 1, 2 or 3 | tip').join('\n');
 }
 
+function attackHintPrompt(arg, sess, k){
+  const open = keysOf(arg).filter(x => sess.status[x] !== 'conceded');
+  const where = k ? 'The player has chosen to aim at ' + k + '. Your hint must be about ' + k + '.' : 'The player has not chosen a target. Pick the single most promising part to attack from: ' + open.join(', ') + '.';
+  const tried = sess.moves.filter(m => m.kind === 'attack').map(m => '- ' + m.text.slice(0, 200)).join('\n');
+  return 'In Antilogia, a dialectical sparring game, a player is attacking the argument below and is stuck. Coach them with a three-step hint ladder, the way a good teacher would: each step gives away a little more, so they can stop as soon as they see it themselves.\n\n' +
+    toneLine(arg) + '\n\n' + ctx(arg, sess) + '\n\n' + where + '\n' + (tried ? 'Attacks they have already made (do not suggest these again):\n' + tried + '\n' : '') + '\n' +
+    'Rules: the NUDGE is a question only, and must not name the answer. The ANGLE names the kind of attack and the question to ask yourself. The EXAMPLE gives one concrete case, fact or scenario to use, in one or two sentences, but not the finished objection. The STARTER is the opening of an objection the player will finish in their own words: 8 to 18 words, ending mid-sentence, with no ellipsis. Pick a line that is genuinely strong against this argument, and prefer one that is well known in the literature when there is one (name it in the ANGLE in a few words).\n\n' +
+    'Reply in exactly this format and nothing else. Each key starts a line, in uppercase:\nTARGET: P1 (or P2, …, INF, or C)\nWEAPON: one of counterexample, hidden assumption, does not follow, ambiguity, proves too much\nNUDGE: one question, at most 22 words\nANGLE: one or two sentences, at most 40 words\nEXAMPLE: one or two sentences, at most 45 words\nSTARTER: the opening words';
+}
+
 /* ---------- parsing ---------- */
 function parseKeyed(text){
   const out = {}; let cur = null;
@@ -1758,7 +1781,8 @@ async function submit(){
     if (sess.awaiting !== 'attack') return;
     sess.nAtk += 1;
     const aim = ui.aim && sess.status[ui.aim] !== 'conceded' ? ui.aim : null;
-    sess.moves.push({ kind: 'attack', n: sess.nAtk, text: text, aim: aim, weapon: tool });
+    sess.moves.push({ kind: 'attack', n: sess.nAtk, text: text, aim: aim, weapon: tool, hinted: !!(sess.hint && sess.hint.shown) });
+    sess.hint = null;
     sess.awaiting = 'reply'; ta.value = ''; save(); renderDispute();
     throwFx(aim);
     await runThinker(replyPrompt(arg, sess), 'reply');
@@ -2113,6 +2137,7 @@ function renderDispute(){
   if (showComp) {
     const ta = $('#reply');
     $('#scoutBtn').hidden = !(sess.mode === 'attack' && !ui.rebuild);
+    $('#atkHintBtn').hidden = !(sess.mode === 'attack' && !ui.rebuild);
     $('#scoutBtn').textContent = sess.scout ? (simple() ? 'Scout again' : 'Survey again') : (simple() ? 'Scout weak spots' : 'Survey weak points');
     if (ui.rebuild) {
       const k = ui.rebuild;
@@ -2135,6 +2160,7 @@ function renderDispute(){
     $('#sumBtn').hidden = !sess.moves.some(m => m.kind === 'verdict' || m.kind === 'reply');
     $('#stopBtn').hidden = !busy;
     renderComposerExtras(arg, sess);
+    renderAtkHint();
     updateMeter(true);
   }
   if (!busy && wantScroll) { wantScroll = false; const last = M.lastElementChild; if (last && sess.moves.length) { try { last.scrollIntoView({ block: 'nearest' }); } catch (e) {} } }
@@ -2143,7 +2169,7 @@ function updateControls(){
   const ai = aiUsable();
   const sess = getSession();
   ['stagePlay','stageSkip'].forEach(id => { const b = $('#' + id); if (b) b.disabled = busy; });
-  ['sideDefend','sideAttack','sendBtn','hintBtn','skipBtn','sumBtn','callBtn','switchBtn','dayTheirs','dayMine','scoutBtn'].forEach(id => { const b = $('#' + id); if (b) b.disabled = busy || !ai; });
+  ['sideDefend','sideAttack','sendBtn','hintBtn','skipBtn','sumBtn','callBtn','switchBtn','dayTheirs','dayMine','scoutBtn','atkHintBtn'].forEach(id => { const b = $('#' + id); if (b) b.disabled = busy || !ai; });
   $('#stopBtn').hidden = !busy;
   $('#reply').disabled = busy;
   $('#hintBtn').disabled = busy || !ai || !lastAnswerable(sess);
@@ -3616,6 +3642,82 @@ function finishPaper(){ $('#paperReview').reset(); $('#paperText').value = ''; s
   $('#prShare').addEventListener('change', () => { $('#prRightsRow').hidden = !$('#prShare').checked; $('#prGo').textContent = $('#prShare').checked ? 'Share and start the debate' : 'Start the debate'; });
   $('#paperReview').addEventListener('submit', submitPaper);
 })();
+/* ---------- attack hint ladder ---------- */
+function hintWeapon(str){
+  const u = (str || '').toLowerCase();
+  if (/counter/.test(u)) return 'counter';
+  if (/assum|premise/.test(u)) return 'assume';
+  if (/follow|infer|valid/.test(u)) return 'follow';
+  if (/ambig|vague|equivoc/.test(u)) return 'vague';
+  if (/too much|parity/.test(u)) return 'toomuch';
+  return null;
+}
+function hintLabels(){ return simple() ? ['Where to look', 'Try this angle', 'Here’s a case'] : ['Pointer', 'Line of attack', 'Illustration']; }
+function renderAtkHint(){
+  const box = $('#atkHint'); if (!box) return;
+  const sess = getSession(), hnt = sess.hint;
+  const show = sess.mode === 'attack' && !ui.rebuild && hnt && !hnt.closed;
+  box.hidden = !show; box.innerHTML = '';
+  const btn = $('#atkHintBtn');
+  if (btn) btn.textContent = hnt && !hnt.loading && hnt.shown < 3 && !hnt.closed ? (simple() ? 'Next hint (' + (hnt.shown + 1) + ' of 3)' : 'Next hint (' + (hnt.shown + 1) + '/3)') : (simple() ? 'Need a hint?' : 'Hint');
+  if (!show) return;
+  const dots = h('span', { class: 'dots3' }); for (let i = 0; i < 3; i++) dots.append(h('i', { class: i < (hnt.shown || 0) ? 'on' : '' }));
+  box.append(h('div', { class: 'hh' }, h('span', { text: hnt.loading ? (simple() ? 'Finding a crack' : 'Preparing a hint') : (simple() ? 'Hint · ' : 'Hint · ') + (hnt.k ? tgt(hnt.k) : '') }), dots,
+    h('button', { type: 'button', class: 'x', 'aria-label': 'Close hint', text: '×', onclick: () => { hnt.closed = true; save(); renderAtkHint(); } })));
+  if (hnt.loading) { box.append(h('div', { class: 'lv loading' }, h('span', { class: 'n', text: '…' }), h('p', { text: simple() ? 'Looking for the weakest spot…' : 'Reading the argument for a weak point…' }))); return; }
+  const L = hintLabels(), texts = [hnt.nudge, hnt.angle, hnt.example];
+  for (let i = 0; i < hnt.shown; i++) box.append(h('div', { class: 'lv' }, h('span', { class: 'n', text: String(i + 1) }), h('div', {}, h('b', { text: L[i] }), h('p', { text: texts[i] }))));
+  const acts = h('div', { class: 'acts' });
+  if (hnt.shown < 3) acts.append(h('button', { type: 'button', class: 'link', text: simple() ? 'Show more' : 'Next step', disabled: busy, onclick: () => revealHint() }));
+  if (hnt.shown >= 2) acts.append(h('button', { type: 'button', class: 'btn', text: simple() ? 'Use this' : 'Start from this', disabled: busy, onclick: useHint }));
+  acts.append(h('span', { class: 'fine', style: 'margin:0;font-size:12px', text: hnt.shown < 3 ? (simple() ? 'Try it yourself first. You can always peek.' : 'Each step reveals more.') : (simple() ? 'Now put it in your own words.' : 'Finish the objection in your own words.') }));
+  box.append(acts);
+}
+function revealHint(){
+  const sess = getSession(), hnt = sess.hint; if (!hnt || hnt.loading) return;
+  if (hnt.shown < 3) { hnt.shown++; sess.hintsUsed = (sess.hintsUsed || 0) + 1; }
+  hnt.closed = false; save(); sfx.tick(); renderAtkHint();
+  if (hnt.k) { const el = partEl(hnt.k); if (el) flash(el, 'fx-wobble', 900); }
+}
+async function attackHint(){
+  const arg = currentArg(), sess = getSession();
+  if (busy || sess.mode !== 'attack' || ui.rebuild) return;
+  const want = ui.aim && sess.status[ui.aim] !== 'conceded' ? ui.aim : null;
+  const cur = sess.hint;
+  // reuse the ladder already fetched for this target: no new call
+  if (cur && !cur.loading && cur.atk === sess.nAtk && (!want || want === cur.k) && sess.status[cur.k] !== 'conceded') {
+    if (cur.closed) { cur.closed = false; save(); renderAtkHint(); return; }
+    if (cur.shown < 3) return revealHint();
+    return;
+  }
+  sess.hint = { loading: true, shown: 0, atk: sess.nAtk };
+  busy = true; setErr(''); updateControls(); renderAtkHint();
+  let ok = false;
+  try {
+    const res = await callClaude(attackHintPrompt(arg, sess, want), { cache: false, onText: () => {} });
+    const f = parseKeyed(res.text);
+    const k = want || normTarget(f.TARGET, arg.premises.length);
+    if (f.NUDGE && f.ANGLE && f.EXAMPLE && sess.status[k] !== undefined) {
+      sess.hint = { k: k, weapon: hintWeapon(f.WEAPON), nudge: f.NUDGE, angle: f.ANGLE, example: f.EXAMPLE, starter: (f.STARTER || '').replace(/[.…]+\s*$/, '').trim(), shown: 1, atk: sess.nAtk };
+      sess.hintsUsed = (sess.hintsUsed || 0) + 1; ok = true;
+    } else { sess.hint = null; setErr(simple() ? 'No hint came back. Try again.' : 'No usable hint came back. Try again.'); }
+  } catch (e) { sess.hint = null; handleErr(e); }
+  finally {
+    busy = false; save(); renderPanel(); renderDispute(); updateControls(); renderAtkHint();
+    if (ok) { sfx.chime(); const el = partEl(sess.hint.k); if (el) flash(el, 'fx-wobble', 1000); }
+  }
+}
+function useHint(){
+  const sess = getSession(), hnt = sess.hint; if (!hnt || busy) return;
+  if (hnt.k && ui.aim !== hnt.k && sess.status[hnt.k] !== 'conceded' && aimingNow(sess)) setAim(hnt.k);
+  const ta = $('#reply'), w = hnt.weapon && WEAPONS.attack.find(x => x.id === hnt.weapon);
+  if (w) ui.weapon = w.id;
+  const opener = hnt.shown >= 3 && hnt.starter ? hnt.starter + ' ' : (w ? (simple() ? w.te : w.ts)(tname(hnt.k)) : '');
+  if (opener) { const cur = ta.value.trim(); ta.value = !cur || cur === (ui.starter || '').trim() ? opener : ta.value.replace(/\s*$/, '') + '\n' + opener; ui.starter = ta.value; }
+  ta.focus(); try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) {}
+  sfx.tick(); renderComposerExtras(currentArg(), sess); updateMeter();
+}
+$('#atkHintBtn').addEventListener('click', attackHint);
 
 /* ---------- boot ---------- */
 function start(data){
