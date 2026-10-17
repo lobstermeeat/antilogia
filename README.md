@@ -4,6 +4,7 @@ Pick a philosopher in a sunlit 3D agora; an AI Refuter knocks their argument dow
 
 - `index.html`: the whole site (3D scene, portraits, debate UI)
 - `api/refute.js`: Vercel Edge Function that relays each move to Claude with your API key
+- `api/papers.js`: the public shelf of shared papers (stores only the reconstructed argument, never the uploaded file)
 
 When an argument breaks, the temple crumbles, the claims shatter and a verdict stamp slams down; sound effects are synthesized in the browser, so there are no audio files to host. Attackers can aim, pick a line of attack and scout weak spots; defenders can repair a fallen claim, add a missing link or scale back the conclusion, and the Refuter judges the repair.
 
@@ -13,3 +14,13 @@ When an argument breaks, the temple crumbles, the claims shatter and a verdict s
 3. Redeploy. Set a monthly spend limit in the Anthropic console.
 
 The function caps prompt size and answer length and soft-limits each visitor to 8 moves a minute.
+
+## Papers and the public shelf
+Anyone can upload a paper (PDF, Word or text). It is read in the browser, Claude reconstructs its main argument, the uploader checks it, and the debate starts. Sharing on the public shelf is optional; shared papers record which premise falls most often, so authors get feedback.
+
+The shelf needs a small database, added once:
+1. In the Vercel project, open **Storage → Create Database**, pick **Upstash for Redis** (free plan), and connect it to this project. It adds `KV_REST_API_URL` and `KV_REST_API_TOKEN` for you.
+2. Redeploy.
+
+Without it, uploading and private debates still work; the shelf just says it is not switched on. Each paper submitted to the shelf is screened by a short Claude check first (`MODERATION_MODEL`, default `claude-haiku-5-5`). Papers reported by three different visitors are hidden. Reading a paper uses a longer prompt, so it has its own limit of 4 papers per visitor every 10 minutes.
+

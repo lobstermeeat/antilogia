@@ -5,14 +5,16 @@ export const config = { runtime: 'edge' };
 const MAX_PROMPT = 40000;          // characters per move
 const MAX_TOKENS = 1500;           // per answer
 const PER_MINUTE = 8;              // moves per visitor per minute (per edge instance; a soft guard)
-const hits = new Map();
+// Reading an uploaded paper needs a much longer prompt, so it gets its own, tighter allowance.
+const MAX_PAPER = 130000, PAPER_TOKENS = 3000, PAPERS_PER_10MIN = 4;
+const hits = new Map(), paperHits = new Map();
 
-function limited(ip){
-  const now = Date.now(), win = hits.get(ip) || [];
-  const recent = win.filter(t => now - t < 60000);
-  recent.push(now); hits.set(ip, recent);
-  if (hits.size > 5000) hits.clear();
-  return recent.length > PER_MINUTE;
+function limited(map, ip, max, ms){
+  const now = Date.now(), win = map.get(ip) || [];
+  const recent = win.filter(t => now - t < ms);
+  recent.push(now); map.set(ip, recent);
+  if (map.size > 5000) map.clear();
+  return recent.length > max;
 }
 const fail = (status, code) => new Response(JSON.stringify({ code }), { status, headers: { 'content-type': 'application/json' } });
 
@@ -23,18 +25,18 @@ export default async function handler(req){
   if (origin && origin !== allowed && origin !== 'https://' + (req.headers.get('host') || '')) return fail(403, 'not_granted');
   if (!process.env.ANTHROPIC_API_KEY) return fail(500, 'sampling_disabled');
   const ip = (req.headers.get('x-forwarded-for') || 'anon').split(',')[0].trim();
-  if (limited(ip)) return fail(429, 'rate_limited');
-
   let body;
   try { body = await req.json(); } catch (e) { return fail(400, 'invalid_request'); }
+  const paper = body.kind === 'paper';
+  if (paper ? limited(paperHits, ip, PAPERS_PER_10MIN, 600000) : limited(hits, ip, PER_MINUTE, 60000)) return fail(429, 'rate_limited');
   const prompt = typeof body.prompt === 'string' ? body.prompt : '';
   if (!prompt) return fail(400, 'invalid_request');
-  if (prompt.length > MAX_PROMPT) return fail(413, 'prompt_too_large');
+  if (prompt.length > (paper ? MAX_PAPER : MAX_PROMPT)) return fail(413, 'prompt_too_large');
 
   const up = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5', max_tokens: MAX_TOKENS, stream: true, messages: [{ role: 'user', content: prompt }] }),
+    body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5', max_tokens: paper ? PAPER_TOKENS : MAX_TOKENS, stream: true, messages: [{ role: 'user', content: prompt }] }),
     signal: req.signal
   }).catch(() => null);
   if (!up) return fail(502, 'upstream_error');
