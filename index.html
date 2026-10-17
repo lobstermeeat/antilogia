@@ -1491,10 +1491,12 @@ function paintLive(fields, raw, mode){
   const nP = arg.premises.length;
   if (fields.VERDICT) {
     const opts = mode === 'thk' ? ['GLANCING','SERIOUS','DECISIVE'] : ['HOLDS','WEAKENED','CONCEDED'];
-    const v = normVerdict(fields.VERDICT, opts);
+    const v = opts.find(o => fields.VERDICT.toUpperCase().indexOf(o) >= 0);
+    if (v) {
     p.vrow.hidden = false;
     p.vrow.firstChild.textContent = (mode === 'thk' ? 'Your objection' : 'Verdict on ' + tgt(sess.focus));
     const st = p.vrow.lastChild; st.textContent = vlabel(v); st.dataset.s = VERDICT_STATUS[v];
+    }
   }
   if (fields.ASSESSMENT && mode !== 'thk') { p.assess.hidden = false; p.assess.textContent = fields.ASSESSMENT; }
   const main = fields.OBJECTION || fields.REPLY || fields.STATEMENT;
@@ -2569,7 +2571,7 @@ function Agora3D(onPick){
 
   const herms = new THREE.Group(); scene.add(herms);
   let items = [], pickables = [], hover = null, setKey = '', step = 1, cur = -1;
-  const view = { yaw: 0, target: 0, drag: false, x: 0, moved: 0, last: 0 };
+  const view = { yaw: 0, target: 0, drag: false, x: 0, moved: 0, last: performance.now() };
   const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(-9, -9);
   const plate = (txt, sub) => {
     const c = document.createElement('canvas'); c.width = 320; c.height = 120; const g = c.getContext('2d');
