@@ -4,6 +4,7 @@ Pick a philosopher in a sunlit 3D agora; an AI Refuter knocks their argument dow
 
 - `index.html`: the whole site (3D scene, portraits, debate UI)
 - `api/refute.js`: Vercel Edge Function that relays each move to Claude with your API key
+- `api/ads.js`: each visitor's daily allowance and rewarded-ad rewards (shared helpers in `api/_store.js`)
 - `api/papers.js`: the public shelf of shared papers (stores only the reconstructed argument, never the uploaded file)
 
 When an argument breaks, the temple crumbles, the claims shatter and a verdict stamp slams down; sound effects are synthesized in the browser, so there are no audio files to host. Attackers can aim, pick a line of attack and scout weak spots; defenders can repair a fallen claim, add a missing link or scale back the conclusion, and the Refuter judges the repair.
@@ -23,4 +24,14 @@ The shelf needs a small database, added once:
 2. Redeploy.
 
 Without it, uploading and private debates still work; the shelf just says it is not switched on. Each paper submitted to the shelf is screened by a short Claude check first (`MODERATION_MODEL`, default `claude-haiku-5-5`). Papers reported by three different visitors are hidden. Reading a paper uses a longer prompt, so it has its own limit of 4 papers per visitor every 10 minutes.
+
+## Daily allowance and rewarded ads
+There is no login and no paid tier. Each visitor gets a number of free moves a day (every Claude call counts as one). When they run out, an "Intermission" page offers a short ad for more moves. In attack mode, a **Free hit** button lets them watch an ad and have the Refuter land one blow for them: a standing part is weakened, a wobbly one falls. Free hits are marked as assisted moves and left out of a paper's community record.
+
+This uses the same Upstash database as the shelf; without it there is no daily limit. Settings (Vercel → Settings → Environment Variables):
+- `DAILY_MOVES` (default 40), `AD_MOVES` moves per ad (default 10), `ADS_PER_DAY` per visitor (default 6), `DAILY_IP_MOVES` ceiling per network (default 400).
+- `AD_UNIT_PATH`: your Google Ad Manager rewarded ad unit, e.g. `/1234567/antilogia_rewarded`. Set `ADS_TEST=1` to try Google's test ad unit first.
+- Until an ad unit is set (or when no ad fills), the page shows a 15-second house ad instead. Change it with `HOUSE_AD`, JSON like `{"label":"Sponsored","title":"…","text":"…","cta":"Visit","url":"https://…"}`.
+
+Web rewarded ads have no server-side verification, so the reward is granted after a few seconds on trust; `ADS_PER_DAY` caps what anyone can gain by faking it. If you have visitors in the EU/UK, Ad Manager needs a consent banner (CMP) before it will serve personalised ads.
 

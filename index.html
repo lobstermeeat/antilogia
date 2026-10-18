@@ -433,7 +433,9 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
 .hp .fill{background:linear-gradient(90deg,#2E74C0,var(--thk));transition:width .5s cubic-bezier(.3,1.3,.5,1)}
 .hp.mid .fill{background:linear-gradient(90deg,#DDAE45,var(--amber))}
 .hp.low .fill{background:linear-gradient(90deg,#DD6B4F,var(--ref))}
-.bridge-head .dmg{display:inline-block;margin-right:6px;font:700 13px/1 var(--f-caps);color:var(--ref);animation:dmg 1.8s ease forwards}
+.bridge-head{position:relative}
+.bridge-head > span:last-child{white-space:nowrap}
+.bridge-head .dmg{position:absolute;right:0;top:-18px;font:700 13px/1 var(--f-caps);color:var(--ref);animation:dmg 1.8s ease forwards}
 .bridge-head .dmg.up{color:var(--thk)}
 @keyframes dmg{0%{opacity:0;transform:translateY(6px) scale(.6)}14%{opacity:1;transform:translateY(-3px) scale(1.3)}70%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-10px)}}
 
@@ -565,6 +567,56 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
 .community .acts{display:flex;gap:14px;flex-wrap:wrap}
 .paper-src{display:block;margin-top:4px}
 @media (max-width:560px){.paper{padding:16px}.tb-right{gap:12px}}
+
+/* Ads: Free hit, quota, intermission page */
+.btn.strike{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(180deg,#FFE7A3,#E8C46A);border-color:#C9962B;color:#3b2f22;box-shadow:0 4px 0 #a97c1f;transition:transform .12s,box-shadow .12s}
+.btn.strike svg{width:16px;height:16px}
+.btn.strike:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 5px 0 #a97c1f}
+.btn.strike:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 #a97c1f}
+.btn.strike .cnt{font:800 11px/1 var(--f-ui);background:#3b2f22;color:#FFE7A3;border-radius:999px;padding:3px 6px}
+.wrap[data-space="seminar"] .btn.strike{background:#FFFDF8;box-shadow:none;border-color:var(--gold)}
+.quota{margin-left:auto;font:600 12px/1 var(--f-ui);color:var(--mute);padding:6px 10px;border-radius:999px;background:#F1E8D6}
+.quota.low{color:var(--ref);background:var(--ref-soft)}
+.move.strike .title{color:#7A5410}
+.seal.bolt{background:linear-gradient(180deg,#FFE7A3,#E8C46A);border-color:#C9962B;color:#3b2f22;font-size:15px}
+.move .q.concede{border-color:var(--thk);background:var(--thk-soft);font-style:normal}
+.fx-bolt{position:absolute;top:0;width:44px;margin-left:-22px;transform-origin:50% 0;animation:bolt .6s ease-out forwards;filter:drop-shadow(0 0 10px rgba(232,196,106,.9))}
+.fx-bolt svg{width:100%;height:100%;display:block}
+@keyframes bolt{0%{transform:scaleY(0);opacity:1}35%{transform:scaleY(1);opacity:1}55%{opacity:.4}70%{opacity:1}100%{opacity:0}}
+.adpage{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:rgba(36,28,18,.55);backdrop-filter:blur(3px);animation:fadeIn .25s ease both;overflow-y:auto}
+.adpage.out{animation:fadeOut .25s ease forwards}
+.adpage.watching{background:transparent;backdrop-filter:none}
+.adpage.watching .ad-sheet{visibility:hidden}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{to{opacity:0}}
+.ad-sheet{position:relative;width:min(480px,100%);background:#FFFDF8;border:2px solid #3b2f22;border-radius:18px;box-shadow:0 6px 0 #3b2f22,0 30px 60px -20px rgba(0,0,0,.5);padding:20px 22px 16px;display:grid;gap:12px;animation:cardIn .45s cubic-bezier(.2,1.3,.4,1) both;overflow:hidden}
+.ad-sheet::before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath d='M0 18.5H20M2 18.5V1.5H18V14.5H6V5.5H14V11H10' fill='none' stroke='%23C9962B' stroke-width='2.2'/%3E%3C/svg%3E") repeat-x 0 0/10px 10px}
+.adpage.sem .ad-sheet{border:1px solid var(--line-strong);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+.ad-head{display:flex;align-items:center;gap:10px;margin-top:6px;font:700 12px/1 var(--f-caps);letter-spacing:.14em;text-transform:uppercase;color:var(--ref)}
+.ad-head svg{width:44px;height:28px;animation:masks 2.4s ease-in-out infinite}
+@keyframes masks{50%{transform:rotate(-6deg) translateY(-2px)}}
+.ad-sheet h2{margin:0;font:700 22px/1.25 var(--f-caps);letter-spacing:.01em}
+.ad-text{margin:0;font:400 16.5px/1.45 var(--f-display)}
+.ad-status{margin:0;font:500 14px/1.4 var(--f-ui);color:var(--thk);min-height:0}
+.ad-status:empty{display:none}
+.ad-fine{margin:0;font:400 12.5px/1.4 var(--f-ui);color:var(--mute)}
+.ad-fine:empty{display:none}
+.ad-acts .btn{flex:1 1 auto}
+.ad-stage{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px;border-radius:12px;background:#F6EFE0;border:1px solid var(--line)}
+.house{display:grid;gap:6px;min-width:0}
+.house-lab{font:700 9.5px/1 var(--f-caps);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.house b{font:700 17px/1.25 var(--f-caps)}
+.house-tx{font:400 14.5px/1.4 var(--f-ui);color:var(--ink)}
+.house-img{width:100%;max-height:160px;object-fit:cover;border-radius:8px}
+.house-cta{justify-self:start;text-decoration:none;padding:8px 14px;font-size:13px}
+.ad-timer{--t:15s;position:relative;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font:700 18px/1 var(--f-caps);color:var(--ink);background:conic-gradient(var(--gold) var(--p,0%),#E6DCC8 0);animation:ring var(--t) linear forwards}
+.ad-timer::before{content:"";position:absolute;inset:6px;border-radius:50%;background:#FFFDF8}
+.ad-timer span{position:relative}
+.ad-timer.done{background:var(--thk);color:var(--thk)}
+@property --p{syntax:'<percentage>';inherits:false;initial-value:0%}
+@keyframes ring{to{--p:100%}}
+@media (max-width:560px){.ad-stage{grid-template-columns:1fr;justify-items:start}.ad-sheet{padding:18px 16px 14px}.quota{margin-left:0}}
+@media (prefers-reduced-motion:reduce){.ad-head svg,.fx-bolt,.ad-sheet,.adpage{animation:none!important}}
 
 /* The Fall */
 .fall{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px 16px;overflow-y:auto;pointer-events:none;transition:background .5s}
@@ -749,6 +801,7 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
         <div class="meter" id="meter" title="A rough guide only. Claude does the real judging."><span class="pips"><i></i><i></i><i></i><i></i><i></i></span><span class="ml"></span></div>
         <div class="row">
           <button type="button" class="btn primary" id="sendBtn">Reply</button>
+          <button type="button" class="btn strike" id="strikeBtn" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 2 5 13.5h6L9.5 22 19 9.5h-6.2z" fill="currentColor"/></svg><span class="sl">Free hit</span><span class="cnt" hidden></span></button>
           <button type="button" class="link" id="atkHintBtn" hidden>Need a hint?</button>
           <button type="button" class="link" id="scoutBtn" hidden>Scout weak spots</button>
           <button type="button" class="link" id="hintBtn">What would they say?</button>
@@ -756,6 +809,7 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
           <button type="button" class="link" id="sumBtn" hidden>Sum up</button>
           <button type="button" class="link" id="switchBtn">Switch sides</button>
           <button type="button" class="link ref" id="stopBtn" hidden>Stop</button>
+          <span class="quota" id="quotaPill" hidden></span>
         </div>
         <div class="err" id="err"></div>
       </div>
@@ -775,9 +829,9 @@ h1,h2,.brand,.intro,.day h2,.own-form h2,.opener h2,.panel h1{font-family:var(--
   async function call(prompt, opts){
     opts = opts || {};
     let res;
-    try { res = await fetch('/api/refute', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: prompt, kind: opts.kind || undefined }), signal: opts.signal }); }
+    try { res = await fetch('/api/refute', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: prompt, kind: opts.kind || undefined, sid: window.ANTI_SID || undefined }), signal: opts.signal }); }
     catch (e) { throw { code: e && e.name === 'AbortError' ? 'cancelled' : 'upstream_error' }; }
-    if (!res.ok) { let c = 'upstream_error'; try { c = (await res.json()).code || c; } catch (e) {} throw { code: c }; }
+    if (!res.ok) { let c = 'upstream_error', q = null; try { const j = await res.json(); c = j.code || c; q = j.quota || null; } catch (e) {} throw { code: c, quota: q }; }
     const rd = res.body.getReader(), dec = new TextDecoder(); let text = '';
     try {
       for (;;) {
@@ -1150,6 +1204,8 @@ const ERR = {
   capability_disabled: 'Live refutation is not available in this view.',
   capability_removed: 'This viewer is too old for live refutation.',
   rate_limited: 'Too many moves too quickly. Wait a minute, then try again.',
+  daily_limit: 'You have used today\u2019s free moves.',
+  no_strike: 'You have no free hits left. Watch an ad to get one.',
   session_expired: 'Your Claude session has expired. Sign in again, then try again.',
   refused: 'Claude declined to answer this one. Reword your reply and try again.',
   empty_completion: 'No answer came back. Try again, with a shorter reply.',
@@ -1459,6 +1515,7 @@ function transcriptText(sess, arg, limit){
       case 'verdict': return '   VERDICT on ' + m.target + ': ' + m.verdict + '. ' + m.text;
       case 'statement': return arg.thinker.toUpperCase() + ' (opening statement): ' + m.text;
       case 'attack': return m.n + '. OBJECTOR' + ((m.aim || m.weapon) ? ' (' + [m.aim ? 'aimed at ' + m.aim : '', m.weapon ? 'as: ' + m.weapon : ''].filter(Boolean).join(', ') + ')' : '') + ': ' + m.text;
+      case 'strike': return '   ASSISTED HIT on ' + m.target + ' (written by the Refuter for the objector, unlocked by watching an ad) [' + m.title + ']: ' + m.text + '\n   ' + arg.thinker.toUpperCase() + ' conceded: ' + m.reply;
       case 'rebuild': return '   DEFENDER REBUILT ' + m.target + ' (this wording replaces the conceded one): ' + m.text;
       case 'reply': return m.n + '… ' + arg.thinker.toUpperCase() + ' (objection read as hitting ' + m.target + ', graded ' + m.verdict + '): ' + m.text + (m.question ? '\n   Question to the objector: ' + m.question : '');
       case 'hint': return '   [the defender consulted lines of defense from the literature]';
@@ -1589,13 +1646,15 @@ async function callClaude(prompt, opts){
   ctl = new AbortController();
   const o = { signal: ctl.signal, modelTier: 'default', onText: opts.onText };
   if (opts.cache === false) o.cache = false;
-  try { return await fn(prompt, o); }
+  if (opts.kind) o.kind = opts.kind;
+  try { const r = await fn(prompt, o); spendMove(opts.kind); return r; }
   finally { ctl = null; }
 }
 function setErr(msg){ $('#err').textContent = msg || ''; $('#openerErr').textContent = msg || ''; }
 function handleErr(e){
   const code = (e && e.code) || 'upstream_error';
   if (code === 'cancelled') { setErr(''); return; }
+  if (code === 'daily_limit') { setErr(''); limitHit(e.quota); return; }
   if (PERMANENT.has(code)) setAi(code === 'sampling_disabled' ? 'disabled' : 'denied');
   setErr(ERR[code] || ERR.upstream_error);
 }
@@ -2084,6 +2143,8 @@ function moveEl(m, arg, idx){
   switch (m.kind) {
     case 'objection': return card('ref', m.n + '.', refSeal(), [who('Refuter', 'on ' + tgt(m.target)), h('h3', { class: 'title', text: m.title }), body(m.text), q(m.question)]);
     case 'defense': return card('you', m.n + '…', youSeal(), [who('You', 'defending ' + tgt(m.target)), m.tool ? h('div', { class: 'mtags' }, h('span', { class: 'mtag def', text: m.tool })) : null, body(m.text)]);
+    case 'strike': return card('ref strike', '', h('span', { class: 'seal ref bolt', text: '⚡', 'aria-hidden': 'true' }), [who(simple() ? 'Free hit' : 'Assisted objection', 'on ' + tgt(m.target) + (simple() ? ', unlocked by an ad' : ' (ad-assisted; not your own move)')), h('h3', { class: 'title', text: m.title }), body(m.text),
+      h('div', { class: 'vrow' }, h('span', { class: 'vlabel', text: shortName(arg) }), stamp(m.verdict)), m.reply ? h('div', { class: 'q concede', text: m.reply }) : null]);
     case 'rebuild': return card('you build', '', youSeal(), [who(simple() ? 'You rebuilt' : 'Your repair', m.target === 'INF' ? (simple() ? 'a missing link' : 'a supplied premise') : m.target === 'C' ? (simple() ? 'a smaller conclusion' : 'a weakened conclusion') : tgt(m.target)), body(m.text)]);
     case 'verdict': return h('div', { class: 'move verdict' }, h('div', { class: 'n' }), h('div', {},
         h('div', { class: 'vrow' }, h('span', { class: 'vlabel', text: 'Verdict on ' + tgt(m.target) }), stamp(m.verdict)),
@@ -2172,6 +2233,7 @@ function updateControls(){
   ['sideDefend','sideAttack','sendBtn','hintBtn','skipBtn','sumBtn','callBtn','switchBtn','dayTheirs','dayMine','scoutBtn','atkHintBtn'].forEach(id => { const b = $('#' + id); if (b) b.disabled = busy || !ai; });
   $('#stopBtn').hidden = !busy;
   $('#reply').disabled = busy;
+  renderStrikeUi();
   $('#hintBtn').disabled = busy || !ai || !lastAnswerable(sess);
 }
 
@@ -2189,6 +2251,7 @@ $('#switchBtn').addEventListener('click', switchSides);
 $('#stopBtn').addEventListener('click', () => { if (ctl) ctl.abort(); });
 $('#callBtn').addEventListener('click', retry);
 $('#scoutBtn').addEventListener('click', () => scout());
+$('#strikeBtn').addEventListener('click', () => freeHit());
 $('#reply').addEventListener('input', () => updateMeter());
 $('#soundBtn').addEventListener('click', () => { state.muted = !state.muted; save(); renderSound(); if (!state.muted) sfx.chime(); });
 $('#panel').addEventListener('click', e => {
@@ -2356,6 +2419,7 @@ async function structureFight(side){
   } catch (e) {
     const code = (e && e.code) || 'upstream_error';
     if (code === 'invalid_json') st.textContent = 'That came back garbled. Try again, or reword it a little.';
+    else if (code === 'daily_limit') { st.textContent = ''; limitHit(e.quota); }
     else if (code !== 'cancelled') { if (PERMANENT.has(code)) setAi(code === 'sampling_disabled' ? 'disabled' : 'denied'); st.textContent = ERR[code] || ERR.upstream_error; }
   } finally {
     if (busy) { busy = false; ctl = null; updateControls(); }
@@ -3005,9 +3069,9 @@ const HIT_E = {
   defend: { HOLDS: 'Blocked!', WEAKENED: 'Cracked…', CONCEDED: 'Toppled!' },
   attack: { GLANCING: 'Bounced off!', SERIOUS: 'Crack! It wobbles', DECISIVE: 'Knockout!' }
 };
-function hitFx(k, verdict, mode){
+function hitFx(k, verdict, mode, forced){
   const st = VERDICT_STATUS[verdict], el = partEl(k);
-  const label = simple() ? ((HIT_E[mode] && HIT_E[mode][verdict]) || vlabel(verdict)) : cap1(tname(k)) + ': ' + vlabel(verdict).toLowerCase();
+  const label = forced || simple() ? ((HIT_E[mode] && HIT_E[mode][verdict]) || vlabel(verdict)) : cap1(tname(k)) + ': ' + vlabel(verdict).toLowerCase();
   if (temple3d) temple3d.quake(st === 'conceded' ? 1.1 : st === 'weakened' ? 0.5 : 0.25);
   if (st === 'conceded') { sfx.crack(); sfx.thud(0.12); quake('s'); }
   else if (st === 'weakened') { sfx.crack(); sfx.boing(); }
@@ -3044,10 +3108,11 @@ function brokeTitle(sess, fresh){
 function afterMove(prevLen, mode){
   if (state.view !== 'arena') return;
   const arg = currentArg(), sess = getSession();
-  const fresh = sess.moves.slice(prevLen).find(m => (m.kind === 'verdict' || m.kind === 'reply') && m.verdict);
-  if (fresh) { hitFx(fresh.target, fresh.verdict, mode); streakFx(fresh, mode); paperEvent(arg, sess, 'verdict', { key: fresh.target, status: VERDICT_STATUS[fresh.verdict], title: fresh.kind === 'verdict' ? landedTitle(sess, fresh) : '' }); }
+  const fresh = sess.moves.slice(prevLen).find(m => (m.kind === 'verdict' || m.kind === 'reply' || m.kind === 'strike') && m.verdict);
+  if (fresh && fresh.kind === 'strike') hitFx(fresh.target, fresh.verdict, mode, simple() ? (fresh.verdict === 'DECISIVE' ? 'Free hit: Knockout!' : 'Free hit: Crack!') : 'Assisted: ' + tname(fresh.target) + ' ' + (fresh.verdict === 'DECISIVE' ? 'conceded' : 'weakened'));
+  else if (fresh) { hitFx(fresh.target, fresh.verdict, mode); streakFx(fresh, mode); paperEvent(arg, sess, 'verdict', { key: fresh.target, status: VERDICT_STATUS[fresh.verdict], title: fresh.kind === 'verdict' ? landedTitle(sess, fresh) : '' }); }
   const now = isBroken(arg, sess);
-  if (now && !sess.broken) paperEvent(arg, sess, 'break');
+  if (now && !sess.broken && !sess.assisted) paperEvent(arg, sess, 'break');
   if (now && !sess.broken) {
     sess.broken = true; sess.brokeBy = fresh ? { k: fresh.target, title: brokeTitle(sess, fresh) } : null; save();
     const id = arg.id;
@@ -3239,6 +3304,7 @@ function useTool(w, attack){
   renderComposerExtras(currentArg(), sess); updateMeter();
 }
 function renderComposerExtras(arg, sess){
+  renderQuota();
   const aimBar = $('#aimBar'), tools = $('#tools'), note = $('#rebuildNote');
   const attack = aimingNow(sess);
   note.hidden = !ui.rebuild; note.innerHTML = '';
@@ -3308,6 +3374,262 @@ async function scout(){
       Object.keys(sess.scout).forEach(k => { if (sess.scout[k].w === 3) { const el = partEl(k); if (el) { flash(el, 'fx-wobble', 1000); const c = centerOf(el); if (onScreen(c.r)) { burst('spark', c.r.left + 16, c.y, 14, { spread: Math.PI * 2, speed: 3, size: 4, life: 0.8, pal: 'ref' }); pop(simple() ? 'Weak spot!' : 'Most exposed', c.x, c.r.top, 'v-conceded'); } } } });
     }
   }
+}
+
+/* ---------- ads: daily allowance, free hits, the intermission page ---------- */
+const AD = { cfg: null, quota: null, loaded: false, open: false };
+function sidNow(){ state.sid = state.sid || newId(16); window.ANTI_SID = state.sid; return state.sid; }
+async function loadAds(){
+  try {
+    const r = await fetch('/api/ads?sid=' + encodeURIComponent(sidNow()));
+    if (!r.ok) throw 0;
+    const j = await r.json(); AD.cfg = j.ads || null; AD.quota = j.quota || null;
+  } catch (e) { AD.cfg = AD.cfg || { unit: '', house: null, moves: 10 }; }
+  AD.loaded = true;
+  if (state.view === 'arena' && !busy) renderQuota();
+}
+function spendMove(kind){
+  if (!AD.quota || kind === 'strike' || kind === 'paper') return;
+  AD.quota.used++; AD.quota.left = Math.max(0, AD.quota.left - 1);
+  renderQuota();
+}
+function strikesLeft(){ return AD.quota ? AD.quota.strikes : (state.localStrikes || 0); }
+function resetTime(q){
+  const t = q && q.resetAt ? new Date(q.resetAt) : (() => { const d = new Date(); d.setUTCHours(24, 0, 0, 0); return d; })();
+  const today = new Date().toDateString() === t.toDateString();
+  return (today ? '' : 'tomorrow ') + 'at ' + t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+function renderQuota(){
+  const pill = $('#quotaPill'); if (!pill) return;
+  const q = AD.quota;
+  pill.hidden = !q || q.left > 10;
+  if (q) { pill.textContent = q.left ? q.left + (q.left === 1 ? ' move' : ' moves') + ' left today' : 'No free moves left today'; pill.classList.toggle('low', q.left <= 3); }
+  renderStrikeUi();
+}
+function renderStrikeUi(){
+  const b = $('#strikeBtn'); if (!b) return;
+  const sess = getSession(), on = state.view === 'arena' && aimingNow(sess) && sess.awaiting === 'attack' && keysOf(currentArg()).some(k => sess.status[k] !== 'conceded');
+  b.hidden = !on;
+  if (!on) return;
+  const n = strikesLeft();
+  b.querySelector('.sl').textContent = simple() ? 'Free hit' : 'Assisted objection';
+  const c = b.querySelector('.cnt'); c.hidden = !n; c.textContent = '×' + n;
+  b.title = n ? 'Use a free hit: the Refuter lands one blow for you' : 'Watch a short ad and the Refuter lands one blow for you';
+  b.disabled = busy || !aiUsable();
+}
+function limitHit(q){
+  if (q) AD.quota = q;
+  renderQuota();
+  openAd('limit').then(ok => {
+    if (!ok) { setErr('Free moves come back ' + resetTime(AD.quota) + '.'); return; }
+    setErr('');
+    const sess = getSession();
+    if (state.view === 'arena' && ['verdict-retry', 'reply-retry'].indexOf(sess.awaiting) >= 0) retry();
+  });
+}
+function strikeTarget(sess, arg){
+  const open = keysOf(arg).filter(k => sess.status[k] !== 'conceded');
+  if (ui.aim && open.indexOf(ui.aim) >= 0) return ui.aim;
+  if (sess.scout) { const s = open.slice().sort((a, b) => ((sess.scout[b] || {}).w || 0) - ((sess.scout[a] || {}).w || 0)); if (s.length && sess.scout[s[0]]) return s[0]; }
+  return open.find(k => sess.status[k] === 'weakened') || open.find(k => k[0] === 'P') || open[0] || null;
+}
+async function freeHit(){
+  const arg = currentArg(), sess = getSession();
+  if (busy || !aimingNow(sess)) return;
+  const k = strikeTarget(sess, arg); if (!k) return;
+  if (!ui.aim) { ui.aim = k; renderPanel(); renderComposerExtras(arg, sess); }
+  if (strikesLeft() <= 0) { const ok = await openAd('strike', { target: k }); if (!ok) return; }
+  await runStrike(k);
+}
+function strikePrompt(arg, sess, k){
+  const st = sess.status[k], heavy = st === 'weakened';
+  return 'You are the Refuter in Antilogia, a dialectical sparring game. The player is attacking the argument below and has unlocked an assisted hit: you write ONE objection on their behalf against ' + k + ', and ' + arg.thinker + ' answers it.\n\n' +
+    toneLine(arg) + '\n\n' + ctx(arg, sess) + '\n\n' +
+    'THE HIT\nWrite the single strongest objection to ' + k + ' that has not already been made in the transcript: concrete, charitable to ' + arg.thinker + ', with a counterexample, hidden assumption or ambiguity, and a named source if there is one. Address it to ' + arg.thinker + ' in the second person.\n\n' +
+    'THE ANSWER\nThen ' + arg.thinker + ' replies in the first person, honestly, in 25 to 60 words. ' + (heavy ? 'This part was already wobbling, and this objection brings it down: the reply concedes that it cannot be held as stated, and says what is lost.' : 'The objection lands: the reply keeps the part only at a real cost, and names the cost (a narrower claim, an extra assumption, or a concession).') + ' No invented quotations.\n\n' +
+    'Reply in exactly this format and nothing else. Each key starts a line, in uppercase:\nTITLE: a name for the objection, four to eight words\nOBJECTION: 60 to 110 words\nREPLY: the answer';
+}
+async function runStrike(k){
+  const arg = currentArg(), sess = getSession(), prevLen = sess.moves.length;
+  busy = true; setErr(''); updateControls(); renderDispute();
+  boltFx(k);
+  startLive('ref', simple() ? 'The Refuter is landing a hit for you' : 'Drafting the assisted objection');
+  let done = false, needAd = false;
+  try {
+    const res = await callClaude(strikePrompt(arg, sess, k), { cache: false, kind: 'strike', onText: u => paintLive(parseKeyed(u.text), u.text, 'ref') });
+    const f = parseKeyed(res.text);
+    if (f.OBJECTION) {
+      const to = sess.status[k] === 'weakened' ? 'conceded' : 'weakened';
+      if (AD.quota) AD.quota.strikes = Math.max(0, AD.quota.strikes - 1); else state.localStrikes = Math.max(0, (state.localStrikes || 0) - 1);
+      sess.moves.push({ kind: 'strike', target: k, title: f.TITLE || 'Assisted objection', text: f.OBJECTION, reply: f.REPLY || '', verdict: to === 'conceded' ? 'DECISIVE' : 'SERIOUS' });
+      sess.status[k] = to; sess.focus = k; sess.assisted = true; sess.hint = null;
+      done = true;
+    } else setErr('The hit fizzled. Your free hit is still there: try again.');
+  } catch (e) {
+    if (e && e.code === 'no_strike') { if (AD.quota) AD.quota.strikes = 0; else state.localStrikes = 0; needAd = true; }
+    else handleErr(e);
+  } finally {
+    busy = false; endLive(); wantScroll = done; save(); renderPanel(); renderDispute(); updateControls();
+    if (done) afterMove(prevLen, 'attack');
+  }
+  if (needAd && await openAd('strike', { target: k })) await runStrike(k);
+}
+function boltFx(k){
+  sfx.whoosh();
+  const el = partEl(k) || $('#panel .temple3d'); if (!el || still3d()) return;
+  const c = centerOf(el); if (!onScreen(c.r)) return;
+  const x = c.r.left + Math.min(60, c.r.width / 3), y = c.y;
+  const b = h('div', { class: 'fx-bolt' }); b.style.left = x + 'px'; b.style.height = Math.max(40, y) + 'px';
+  b.innerHTML = '<svg viewBox="0 0 40 200" preserveAspectRatio="none" aria-hidden="true"><path d="M24 0 10 82h12L6 200 34 96H21L30 0z" fill="#FFE7A3" stroke="#C9962B" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>';
+  FX.append(b); setTimeout(() => b.remove(), 650);
+  setTimeout(() => { burst('spark', x, y, 22, { spread: Math.PI * 2, speed: 5, size: 5, life: 0.8 }); sfx.crack(); if (temple3d) temple3d.quake(0.8); }, 220);
+}
+
+/* the intermission page */
+const HOUSE_DEFAULT = { label: 'From Antilogia', title: 'Got a paper of your own?', text: 'Upload it, and the Refuter will test its argument premise by premise. Share it on the shelf to see which premise falls most often.', cta: 'Bring a paper', action: 'paper' };
+async function adsApi(body){
+  const r = await fetch('/api/ads', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ sid: sidNow() }, body)) });
+  let j = {}; try { j = await r.json(); } catch (e) {}
+  if (!r.ok) throw Object.assign({ code: j.code || 'upstream_error' }, j);
+  return j;
+}
+function loadGpt(){ return loadScript('https://securepubads.g.doubleclick.net/tag/js/gpt.js'); }
+function openAd(mode, opt){
+  if (AD.open) return Promise.resolve(false);
+  AD.open = true; opt = opt || {};
+  return new Promise(resolve => {
+    const fun = simple(), q = AD.quota, cfg = AD.cfg || {}, arg = currentArg();
+    const movesN = (q && q.adMoves) || cfg.moves || 10;
+    const noAds = mode === 'limit' && q && q.adsLeft <= 0;
+    let ticket = null, finished = false, gslot = null, readyEv = null, granted = false, timer = null, adMode = null;
+    const ov = h('div', { class: 'adpage ' + (fun ? 'fun' : 'sem'), role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'adTitle' });
+    const sheet = h('div', { class: 'ad-sheet' });
+    const mask = '<svg viewBox="0 0 64 40" aria-hidden="true"><path d="M4 6c8-4 18-4 26 0v14c0 9-6 16-13 16S4 29 4 20z" fill="#FBF3DF" stroke="#3b2f22" stroke-width="2"/><path d="M11 16q3-3 6 0M19 16q3-3 6 0M11 26q6 5 12 0" fill="none" stroke="#3b2f22" stroke-width="2" stroke-linecap="round"/><path d="M34 6c8-4 18-4 26 0v14c0 9-6 16-13 16S34 29 34 20z" fill="#B8432A" stroke="#3b2f22" stroke-width="2"/><path d="M41 18q3 3 6 0M49 18q3 3 6 0M41 30q6-5 12 0" fill="none" stroke="#FFF8EC" stroke-width="2" stroke-linecap="round"/></svg>';
+    const head = h('div', { class: 'ad-head' }); head.innerHTML = mask; head.append(h('span', { text: fun ? 'Intermission' : 'A short break' }));
+    const title = h('h2', { id: 'adTitle' }), text = h('p', { class: 'ad-text' }), stage = h('div', { class: 'ad-stage', hidden: true }), status = h('p', { class: 'ad-status', 'aria-live': 'polite' });
+    const go = h('button', { type: 'button', class: 'btn primary ad-go' }), no = h('button', { type: 'button', class: 'link', text: noAds ? 'Close' : 'No thanks' });
+    const fine = h('p', { class: 'ad-fine' });
+    if (mode === 'limit') {
+      title.textContent = noAds ? (fun ? 'That’s all for today!' : 'Today’s allowance is used up.') : (fun ? 'You’ve used today’s free moves.' : 'You have reached today’s free moves.');
+      text.textContent = noAds ? 'You’ve also watched today’s ads. Free moves come back ' + resetTime(q) + '.' : 'Watch a short ad to get ' + movesN + ' more moves now, or come back ' + resetTime(q) + ' when your free moves refill.';
+      go.textContent = 'Watch an ad: +' + movesN + ' moves';
+    } else {
+      const k = opt.target;
+      title.textContent = fun ? 'Free hit on ' + tgt(k) + '?' : 'An assisted objection against ' + (k === 'INF' ? 'the inference' : k === 'C' ? 'the conclusion' : k) + '?';
+      text.textContent = (fun ? 'Watch a short ad and the Refuter lands one blow for you: ' : 'Watch a short ad and the Refuter drafts one objection for you: ') + (getSession().status[k] === 'weakened' ? 'this part is already wobbling, so it will fall.' : 'this part will be weakened.') + ' It goes in the record as an assisted move.';
+      go.textContent = fun ? 'Watch an ad for a free hit' : 'Watch an ad';
+      if (arg.paperId) fine.textContent = 'Assisted hits are left out of the author’s record.';
+    }
+    if (q && !noAds) fine.textContent = (fine.textContent ? fine.textContent + ' ' : '') + q.adsLeft + (q.adsLeft === 1 ? ' ad' : ' ads') + ' left to watch today.';
+    if (noAds) go.hidden = true;
+    sheet.append(head, title, text, stage, status, h('div', { class: 'row ad-acts' }, go, no), fine);
+    ov.append(sheet); document.body.append(ov);
+    try { go.hidden ? no.focus() : go.focus(); } catch (e) {}
+    sfx.chime();
+
+    const finish = ok => {
+      if (finished) return; finished = true;
+      clearInterval(timer);
+      try { if (gslot) window.googletag.destroySlots([gslot]); } catch (e) {}
+      ov.classList.add('out'); setTimeout(() => ov.remove(), 260);
+      document.removeEventListener('keydown', onKey);
+      AD.open = false; resolve(ok);
+    };
+    const reward = async () => {
+      status.textContent = 'Collecting your reward…';
+      try {
+        if (ticket && ticket !== 'local') { const j = await adsApi({ action: 'claim', ticket: ticket }); if (j.quota) AD.quota = j.quota; }
+        else if (mode === 'strike') state.localStrikes = (state.localStrikes || 0) + 1;
+        save(); renderQuota();
+        sfx.fanfare(); const c = centerOf(sheet); burst('spark', c.x, c.r.top + 40, 40, { spread: Math.PI * 2, speed: 6, size: 6, life: 1.1 });
+        status.textContent = mode === 'limit' ? '+' + movesN + ' moves. Back to the fight!' : (simple() ? 'Free hit ready!' : 'Assisted objection unlocked.');
+        setTimeout(() => finish(true), 900);
+      } catch (e) {
+        status.textContent = e.code === 'too_soon' ? 'The ad ended too quickly to count. Try again.' : e.code === 'ads_exhausted' ? 'That was today’s last ad. Moves come back ' + resetTime(e.quota || q) + '.' : 'The reward could not be collected. Try again in a moment.';
+        go.hidden = false; go.disabled = false; stage.hidden = true;
+      }
+    };
+    const confirmLeave = () => {
+      if (adMode === 'house' && stage.querySelector('.ad-timer:not(.done)')) {
+        if (no.dataset.armed) return finish(false);
+        no.dataset.armed = '1'; no.textContent = 'Leave and lose the reward'; no.classList.add('ref');
+        setTimeout(() => { if (!finished) { delete no.dataset.armed; no.textContent = 'No thanks'; no.classList.remove('ref'); } }, 3500);
+        return;
+      }
+      finish(false);
+    };
+    const onKey = e => { if (e.key === 'Escape') confirmLeave(); };
+    document.addEventListener('keydown', onKey);
+    no.addEventListener('click', confirmLeave);
+    ov.addEventListener('click', e => { if (e.target === ov) confirmLeave(); });
+
+    const house = () => {
+      adMode = 'house';
+      const hc = Object.assign({}, HOUSE_DEFAULT, cfg.house || {});
+      const card = h('div', { class: 'house' },
+        h('span', { class: 'house-lab', text: hc.label || 'Sponsored' }),
+        hc.image ? h('img', { src: hc.image, alt: '', class: 'house-img' }) : null,
+        h('b', { text: hc.title }), h('span', { class: 'house-tx', text: hc.text }));
+      if (hc.cta) {
+        const cta = hc.url ? h('a', { class: 'btn house-cta', href: hc.url, target: '_blank', rel: 'noopener sponsored', text: hc.cta }) : h('button', { type: 'button', class: 'btn house-cta', text: hc.cta, onclick: () => { finish(false); goLibrary(); setTimeout(openPaperBox, 200); } });
+        card.append(cta);
+      }
+      const secs = Math.max(5, Math.min(30, +(cfg.houseSeconds || 15)));
+      const ring = h('div', { class: 'ad-timer', style: '--t:' + secs + 's' }, h('span', { text: String(secs) }));
+      stage.innerHTML = ''; stage.append(card, ring); stage.hidden = false;
+      go.hidden = true; status.textContent = '';
+      let left = secs;
+      timer = setInterval(() => {
+        left--; ring.firstChild.textContent = String(Math.max(0, left));
+        if (left <= 0) {
+          clearInterval(timer); ring.classList.add('done'); ring.firstChild.textContent = '✓';
+          go.hidden = false; go.disabled = false; go.textContent = 'Collect reward';
+          go.onclick = () => { go.disabled = true; reward(); };
+          try { go.focus(); } catch (e) {}
+        }
+      }, 1000);
+    };
+    const gpt = () => new Promise(res => {
+      if (!cfg.unit) return res(false);
+      let settled = false;
+      const done = v => { if (!settled) { settled = true; res(v); } };
+      setTimeout(() => done(false), 8000);
+      loadGpt().then(() => {
+        const gt = window.googletag = window.googletag || { cmd: [] };
+        gt.cmd.push(() => {
+          try {
+            gslot = gt.defineOutOfPageSlot(cfg.unit, gt.enums.OutOfPageFormat.REWARDED);
+            if (!gslot) return done(false);
+            gslot.addService(gt.pubads());
+            const pa = gt.pubads();
+            pa.addEventListener('rewardedSlotReady', ev => { if (ev.slot === gslot) { readyEv = ev; done(true); } });
+            pa.addEventListener('rewardedSlotGranted', ev => { if (ev.slot === gslot) granted = true; });
+            pa.addEventListener('rewardedSlotClosed', ev => {
+              if (ev.slot !== gslot) return;
+              try { gt.destroySlots([gslot]); } catch (e) {} gslot = null;
+              ov.classList.remove('watching');
+              if (granted) reward(); else { status.textContent = 'The ad was closed before the end, so there is no reward this time.'; go.hidden = false; go.disabled = false; go.textContent = 'Try again'; go.onclick = start; }
+            });
+            pa.addEventListener('slotRenderEnded', ev => { if (ev.slot === gslot && ev.isEmpty) done(false); });
+            gt.enableServices(); gt.display(gslot);
+          } catch (e) { done(false); }
+        });
+      }).catch(() => done(false));
+    });
+    const start = async () => {
+      go.disabled = true; status.textContent = 'Loading the ad…'; granted = false;
+      try { const j = await adsApi({ action: 'start', reward: mode === 'strike' ? 'strike' : 'moves' }); ticket = j.ticket; if (j.quota) AD.quota = j.quota; }
+      catch (e) {
+        if (e.code === 'ads_exhausted') { status.textContent = 'You’ve watched today’s ads. Moves come back ' + resetTime(e.quota || q) + '.'; go.hidden = true; no.textContent = 'Close'; return; }
+        ticket = 'local';
+      }
+      const ok = await gpt();
+      if (finished) return;
+      if (ok && readyEv) { status.textContent = ''; ov.classList.add('watching'); try { readyEv.makeRewardedVisible(); } catch (e) { house(); } }
+      else house();
+    };
+    go.onclick = start;
+  });
 }
 
 /* ---------- papers: upload, extract, share, community record ---------- */
@@ -3589,6 +3911,7 @@ async function findArgument(){
     try { $('#paperReview').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
   } catch (e) {
     const code = e && e.code;
+    if (code === 'daily_limit') { st.textContent = ''; limitHit(e.quota); return; }
     st.textContent = e && e.msg ? e.msg : code === 'cancelled' ? '' : code === 'lib' ? 'The file reader could not load. Check your connection, or paste the text.' : (PAPER_ERR[code] || ERR[code] || (code === 'empty_completion' ? 'The reconstruction came back garbled. Try again.' : 'That file could not be read. Try a PDF or paste the text.'));
   } finally {
     up.busy = false; up.ctl = null; $('#paperGo').disabled = false; st.classList.remove('busy');
@@ -3730,8 +4053,10 @@ function start(data){
   if (state.view === 'arena' && currentArg().kind === 'everyday' && state.tone === 'scholar') state.view = 'library';
   if (state.view !== 'arena') state.view = 'library';
   Object.keys(state.sessions).forEach(id => { const v = state.sessions[id]; if (!v || !v.status || !Array.isArray(v.moves)) delete state.sessions[id]; });
+  sidNow();
   renderAll();
   initSample();
+  loadAds();
   openSharedFromUrl();
 }
 async function openSharedFromUrl(){

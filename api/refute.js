@@ -1,5 +1,6 @@
 // Vercel Edge Function: relays one Refuter move to Claude and streams the text back.
 // Set ANTHROPIC_API_KEY in the Vercel project settings. Optional: ANTHROPIC_MODEL, ALLOWED_ORIGIN.
+import { hasStore, redis, LIMITS, quota, keys, clean, resetAt } from './_store.js';
 export const config = { runtime: 'edge' };
 
 const MAX_PROMPT = 40000;          // characters per move
@@ -32,6 +33,27 @@ export default async function handler(req){
   const prompt = typeof body.prompt === 'string' ? body.prompt : '';
   if (!prompt) return fail(400, 'invalid_request');
   if (prompt.length > (paper ? MAX_PAPER : MAX_PROMPT)) return fail(413, 'prompt_too_large');
+
+  // Daily allowance (only when the database is connected). A "strike" is paid for by a watched ad,
+  // so it spends a strike credit instead of a move. Reading a paper has its own limit above.
+  const sid = clean(body.sid, 40) || ('ip-' + ip);
+  if (hasStore() && !paper) {
+    const k = keys(sid, ip);
+    try {
+      if (body.kind === 'strike') {
+        const [left] = await redis([['DECR', k.strikes]]);
+        if (left < 0) { await redis([['INCR', k.strikes]]); return fail(402, 'no_strike'); }
+      } else {
+        const ttl = Math.ceil((resetAt() - Date.now()) / 1000) + 3600;
+        const [used, ipUsed, bonus] = await redis([['INCR', k.used], ['INCR', k.ip], ['GET', k.bonus], ['EXPIRE', k.used, ttl], ['EXPIRE', k.ip, ttl]]);
+        if (used > LIMITS.daily + (parseInt(bonus, 10) || 0) || ipUsed > LIMITS.perIp) {
+          await redis([['DECR', k.used], ['DECR', k.ip]]);
+          const q = await quota(sid, ip);
+          return new Response(JSON.stringify({ code: 'daily_limit', quota: q }), { status: 429, headers: { 'content-type': 'application/json' } });
+        }
+      }
+    } catch (e) { /* if the store is down, let the move through rather than block everyone */ }
+  }
 
   const up = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
